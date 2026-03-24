@@ -9,8 +9,10 @@ object LearnDestination : AppDestination {
     override val route: String = "learn"
 }
 
-fun NavGraphBuilder.learnScreen() {
+fun NavGraphBuilder.learnScreen(
+    onVideoRequested: (String) -> Unit = {},
+) {
     composable(route = LearnDestination.route) {
-        LearnRoute()
+        LearnRoute(onVideoRequested = onVideoRequested)
     }
 }

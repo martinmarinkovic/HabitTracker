@@ -87,7 +87,7 @@
 - The Learn continuation follow-up intentionally changed coverage and previews only; it did not widen the Learn data contract or rework the existing production UI/state flow that was already present in the interrupted session.
 - Learn now has an approved provisional runtime spec for the category list endpoint, detail payload schema, and derived media URLs, but the repo still lacks verified iOS Learn screen inventory and parity references.
 - Learn dependency ownership now matches the architecture rules: `feature:learn` depends only on core/domain modules, `data:learn` still owns repository binding, and `:app` now owns the Learn feature/data assembly dependency.
-- The Learn data path now surfaces derived `videoUrl` values to the existing feature state, but the app shell still does not wire `onVideoRequested` end to end, so the current `Play Video` CTA remains an integration follow-up rather than a parity-complete flow.
+- The app shell now wires `onVideoRequested` end to end through the Learn feature entry and opens derived Learn `videoUrl` values through an app-owned external URI handler, so the `Play Video` CTA no longer resolves to a no-op.
 - Profile remains intentionally blocked: `ProfileFeatureEntry` is still a placeholder route, and the current `ProfileSummary` contract is only a provisional count aggregate with no sourced identity/avatar/settings/mood-analytics surface.
 
 ## Blockers
@@ -107,8 +107,8 @@
 - The new Activity UI is buildable, but it remains assumption-driven and cannot be treated as parity-final until the iOS Activity audit exists.
 - The Activity Compose UI tests compile into the Android test artifact, but they were not executed on a device or emulator in this session.
 - No verified Learn iOS screen inventory or parity references exist in the repository yet.
-- The Learn data path now exposes derived `videoUrl`, but the app shell still passes a no-op `onVideoRequested` callback, so Learn video playback is not wired end to end.
 - The Learn Compose UI tests compile into the Android test artifact, but they were not executed on a device or emulator in this session.
+- The Learn repository failure branches for detail-fetch failure, empty-body failure, and serialization failure still lack direct unit-test coverage.
 - No verified Profile iOS screen inventory, identity/avatar contract, settings-shortcut behavior, period-switching rule, or mood-analytics spec exists in the repository.
 
 ## Validation
@@ -135,6 +135,7 @@
 - No build validation was required in the Learn runtime spec approval follow-up because this session updated documentation only.
 - `./gradlew --no-daemon :data:learn:testDebugUnitTest :feature:learn:testDebugUnitTest :feature:learn:assembleDebug :app:assembleDebug` completed successfully after implementing the Learn runtime data path and mapping updates.
 - `./gradlew --no-daemon :feature:learn:assembleDebug :app:assembleDebug` completed successfully after removing the direct `feature:learn` -> `data:learn` dependency and moving Learn data integration ownership to `:app`.
+- `./gradlew --no-daemon :feature:learn:testDebugUnitTest :feature:learn:assembleDebug :app:assembleDebug` completed successfully after wiring Learn video launching through the app shell.
 
 ## Exact Next Recommended Step
-Either wire `LearnEffect.OpenVideo` to a real app-level launcher or suppress the Learn video CTA until that launcher exists.
+Add direct Learn repository tests for detail-fetch failure, empty-body failure, and serialization failure so the runtime data-path failure branches are covered.

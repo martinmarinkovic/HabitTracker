@@ -1,6 +1,7 @@
 package com.threemdroid.habittracker.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -24,6 +25,7 @@ fun HabitTrackerApp(
     createHabitViewModelFactory: ViewModelProvider.Factory,
 ) {
     val navController = rememberNavController()
+    val uriHandler = LocalUriHandler.current
 
     NavHost(
         navController = navController,
@@ -54,7 +56,9 @@ fun HabitTrackerApp(
             },
         )
         activityScreen()
-        learnScreen()
+        learnScreen(
+            onVideoRequested = uriHandler::openUri,
+        )
         profileScreen()
         settingsScreen()
     }

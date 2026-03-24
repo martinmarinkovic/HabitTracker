@@ -692,3 +692,22 @@ Remove the direct `feature:learn` -> `data:learn` dependency without changing Le
 
 ### Next Milestone
 Either wire `LearnEffect.OpenVideo` to a real app-level launcher or suppress the Learn video CTA until that launcher exists.
+
+## 2026-03-24 Learn Video Wiring
+### Scope
+Resolve the dead Learn video CTA by wiring the existing `LearnEffect.OpenVideo` callback path through app-owned navigation/integration code without changing other Learn behavior.
+
+### Completed
+- Updated the Learn feature entry so `learnScreen(...)` accepts the existing `onVideoRequested` callback and forwards it into `LearnRoute` instead of relying on the default no-op callback.
+- Updated the app navigation host to own Learn video launching by passing an app-level URI handler into `learnScreen(...)`, so Learn detail now opens the derived runtime `videoUrl` through the system external handler.
+- Kept the existing Learn MVI structure and UI behavior unchanged apart from resolving the dead action.
+- Reused the existing Learn ViewModel `OpenVideo` effect test coverage instead of widening the Learn test surface for this wiring-only change.
+- Verified the wiring with `./gradlew --no-daemon :feature:learn:testDebugUnitTest :feature:learn:assembleDebug :app:assembleDebug`.
+
+### Remaining Risks
+- Learn parity still lacks verified iOS Learn screen inventory and playback references, so the current external video-launch behavior remains provisional rather than parity-final.
+- Learn repository failure branches for detail-fetch failure, empty-body failure, and serialization failure are still not directly unit tested.
+- Learn Android UI tests still compile into the Android test artifact only; they were not executed on a device or emulator in this session.
+
+### Next Milestone
+Add direct Learn repository tests for detail-fetch failure, empty-body failure, and serialization failure so the real data-path failure branches are covered.
