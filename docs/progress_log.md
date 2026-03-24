@@ -316,3 +316,49 @@ Remove direct Room and repository construction from the app composable shell and
 
 ### Next Milestone
 Import verified iOS Home references and reconcile the current Home UI assumptions before making further Home presentation or navigation changes.
+
+## 2026-03-24 Create Habit MVI Foundation
+### Scope
+Implement Create Habit feature logic, validation, reducer state transitions, and ViewModel orchestration without building the final Create Habit UI.
+
+### Completed
+- Added `CreateHabitUiState`, `CreateHabitIntent`, `CreateHabitEffect`, and supporting reminder/form state models in `feature/create_habit`.
+- Added a pure `CreateHabitReducer` and a `CreateHabitViewModel` with reducer-driven form updates and channel-backed one-time effects.
+- Added feature-local Create Habit draft, validation, and save-use-case layers so form validation and persistence stay outside the UI layer.
+- Added support for token-based icon/color selection state, boolean vs quantity mode, target/default increment inputs, unit label, multiple-updates toggle, schedule presets, custom weekday selection, reminder state, and save submission.
+- Kept `CreateHabitDestination` as the existing placeholder route so this phase stays logic-only and does not start unsourced UI assembly.
+- Added direct unit coverage for Create Habit validation, save-path mapping and rollback behavior, reducer state transitions, and ViewModel intent-to-state / intent-to-effect behavior.
+- Verified the changed scope with `./gradlew --no-daemon :feature:create_habit:assembleDebug`, `./gradlew --no-daemon :feature:create_habit:testDebugUnitTest`, and `./gradlew --no-daemon :app:assembleDebug`.
+
+### Observed Baseline
+- Create Habit now has a strict MVI logic layer, but the route still renders the existing placeholder screen.
+- The save path uses the current `HabitsRepository` contract only: it persists the new habit first, then persists reminders, and performs a best-effort rollback by deleting the created habit if reminder persistence fails.
+- Create Habit icon and color handling remains token-based because no approved picker catalog or source-backed asset inventory exists in the repository.
+- Create Habit schedule handling is conservative and currently supports `EVERY_DAY`, `WEEKDAYS`, `WEEKENDS`, and `CUSTOM` presets only.
+
+### Outstanding Blockers
+- Missing iOS Create Habit screen inventory, screenshots, and state audit.
+- Missing sourced Create Habit defaults, copy, validation wording, and reminder interaction rules.
+- Missing approved icon and color picker catalog plus any sourced default selection behavior.
+- Missing sourced confirmation that the current schedule preset set matches the iOS product.
+- No route wiring or non-final UI assembly yet for the new Create Habit logic layer.
+
+### Next Milestone
+Import verified iOS Create Habit references and reconcile the current Create Habit assumptions before wiring `CreateHabitViewModel` into the route or building any non-final Create Habit UI.
+
+## 2026-03-24 Create Habit Review Follow-Up
+### Scope
+Audit the new Create Habit logic phase for architecture compliance, MVI compliance, regression risk, and documentation completeness.
+
+### Completed
+- Reviewed the new `feature/create_habit` logic, tests, and feature boundary against the architecture, state-management, testing, regression, and parity docs.
+- Confirmed the Create Habit phase stayed within scope: no UI assembly, no unrelated feature changes, and no repository/data refactor beyond the existing habits contract usage.
+- Logged the previously missing Create Habit assumptions in `docs/known_assumptions_and_gaps.md` so the shared blocker ledger now matches the documented Create Habit behavior already described in the progress log and handoff.
+
+### Remaining Risks
+- Create Habit behavior is still provisional because no iOS Create Habit screen inventory, screenshots, or flow audit exists in the repository.
+- The current Create Habit logic still depends on unsourced defaults for schedule presets, picker behavior, reminder defaults, and reminder-save transaction semantics.
+- Create Habit route wiring and non-final UI assembly remain blocked until the iOS Create Habit source material is imported.
+
+### Next Milestone
+Import verified iOS Create Habit references and reconcile the newly logged Create Habit assumptions before wiring `CreateHabitViewModel` into the route or building any non-final Create Habit UI.

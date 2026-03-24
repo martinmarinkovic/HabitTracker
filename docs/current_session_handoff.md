@@ -20,6 +20,11 @@
 - Logged the Home UI fallback copy/visual assumptions in `docs/known_assumptions_and_gaps.md`.
 - Added an app-level Hilt module that now owns `HabitTrackerDatabase`, `HabitsRepository`, and `ActivityRepository` creation.
 - Injected the Home repositories into `MainActivity`, moved `homeViewModelFactory(...)` assembly there, and removed direct Room/repository construction from `HabitTrackerApp`.
+- Added `CreateHabitUiState`, `CreateHabitIntent`, `CreateHabitEffect`, reminder/form state models, a pure reducer, and a `CreateHabitViewModel` in `feature/create_habit`.
+- Added feature-local Create Habit draft, validation, and save use cases so Create Habit form rules and persistence orchestration live outside the UI layer.
+- Added Create Habit tests for validation behavior, reminder/save mapping and rollback behavior, reducer transitions, and ViewModel intent-to-state / intent-to-effect handling.
+- Kept `CreateHabitDestination` on the existing placeholder route so the phase stays logic-only and does not start unsourced Create Habit UI work.
+- Reviewed the Create Habit logic phase and added the missing Create Habit assumption rows to `docs/known_assumptions_and_gaps.md` so the durable blocker ledger now matches the current Create Habit implementation and tests.
 
 ## Key Decisions
 - Home now has strict MVI contracts with reducer-driven state updates and channel-backed one-time effects.
@@ -31,6 +36,10 @@
 - Home UI stays intentionally conservative where product source is missing: the mood control is read-only visual state, the date strip uses a 7-day selected-date-centered window, habit icons fall back to token/name monograms, color tokens map to semantic accents, and bottom navigation uses text monograms instead of unsourced product icons.
 - App-shell DI ownership is now Hilt-managed: `MainActivity` receives repository interfaces from Hilt and passes the existing Home `ViewModelProvider.Factory` into `HabitTrackerApp`, so the Composable shell no longer constructs Room or repository objects.
 - Edit-habit navigation remains effect-backed but unresolved at the app layer because no sourced edit flow or destination exists in the repository, so the action sheet now hides `Edit Habit` until a real callback is wired.
+- Create Habit now follows the same strict MVI baseline as Home: immutable `UiState`, reducer-style state updates, and one-time effects emitted outside `UiState`.
+- Create Habit validation is conservative and currently assumes these unsourced defaults: boolean is the initial habit type, quantity validation only applies in quantity mode, schedule presets are limited to `EVERY_DAY`, `WEEKDAYS`, `WEEKENDS`, and `CUSTOM`, custom weekday toggles preserve the currently visible day selection, and blank quantity unit labels normalize to `null`.
+- Create Habit currently treats icon/color selection as required token picks with no product-approved catalog, gives newly added reminders a provisional default time of `09:00`, and maps reminder schedules to the habit-level selected days because no sourced per-reminder schedule UI/rules exist in the repo.
+- Create Habit save currently persists the habit through `HabitsRepository.upsertHabit(...)`, then persists reminders individually through `upsertReminder(...)`, and performs a best-effort rollback by deleting the new habit if a reminder save fails because no transactional create-habit repository contract exists yet.
 
 ## Blockers
 - No iOS Home screen inventory, flow audit, or state inventory exists in the repository.
@@ -40,6 +49,9 @@
 - No sourced Home edit flow or action-sheet behavior exists beyond the already implemented Home logic effects.
 - `HomeRoute` still uses non-lifecycle-aware one-shot effect collection.
 - Home still uses a manually assembled `homeViewModelFactory(...)` rather than feature-level Hilt ViewModel integration, although the app-shell DI violation itself is now fixed.
+- No iOS Create Habit screen inventory, screenshots, or flow/state audit exists in the repository.
+- No sourced Create Habit defaults, validation copy, schedule preset list, reminder interaction rules, or icon/color picker behavior exists in the repository.
+- Create Habit route wiring and all Create Habit UI assembly remain blocked; `CreateHabitDestination` still renders the placeholder screen.
 
 ## Validation
 - `./gradlew :feature:home:testDebugUnitTest :feature:home:assembleDebug :data:habits:assembleDebug` completed successfully.
@@ -50,6 +62,9 @@
 - `./gradlew --no-daemon :feature:home:assembleDebug :feature:home:assembleAndroidTest :app:assembleDebug` completed successfully after the Home UI review follow-up fix.
 - `./gradlew --no-daemon :feature:home:assembleDebug` completed successfully after moving app-shell database/repository ownership into Hilt providers.
 - `./gradlew --no-daemon :app:assembleDebug` completed successfully after removing direct Room/repository construction from `HabitTrackerApp`.
+- `./gradlew --no-daemon :feature:create_habit:assembleDebug` completed successfully after adding the Create Habit MVI logic layer.
+- `./gradlew --no-daemon :feature:create_habit:testDebugUnitTest` completed successfully after adding Create Habit validation, reducer, save-path, and ViewModel tests.
+- `./gradlew --no-daemon :app:assembleDebug` completed successfully after the Create Habit feature-module changes.
 
 ## Exact Next Recommended Step
-Import verified iOS Home screenshots and flow/state references, then update [docs/ios_screen_inventory.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/ios_screen_inventory.md), [docs/ui_parity_checklist.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/ui_parity_checklist.md), and [docs/known_assumptions_and_gaps.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/known_assumptions_and_gaps.md) before reconciling the current Home UI copy, iconography, color mappings, mood treatment, and bottom-navigation visuals against sourced Home parity requirements.
+Import verified iOS Create Habit screenshots and flow/state references, then update [docs/ios_screen_inventory.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/ios_screen_inventory.md), [docs/feature_parity_checklist.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/feature_parity_checklist.md), and [docs/icon_color_catalog.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/icon_color_catalog.md) before wiring `CreateHabitViewModel` into [CreateHabitFeatureEntry.kt](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/feature/create_habit/src/main/java/com/threemdroid/habittracker/feature/create_habit/CreateHabitFeatureEntry.kt) or assembling any non-final Create Habit UI on top of the new logic layer.
