@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.threemdroid.habittracker.feature.home.domain.RecordHomeHabitProgressUseCaseTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-03-24T10:19:25.656Z" hostname="Martins-MacBook-Pro.local" time="0.014">
+<testsuite name="com.threemdroid.habittracker.feature.home.domain.RecordHomeHabitProgressUseCaseTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-03-24T10:53:02.655Z" hostname="Martins-MacBook-Pro.local" time="0.015">
   <properties/>
   <testcase name="invoke_stoppedHabit_returnsValidationFailure" classname="com.threemdroid.habittracker.feature.home.domain.RecordHomeHabitProgressUseCaseTest" time="0.002"/>
-  <testcase name="invoke_whenMultipleUpdatesAreAllowed_generatesNewEntryId" classname="com.threemdroid.habittracker.feature.home.domain.RecordHomeHabitProgressUseCaseTest" time="0.004"/>
-  <testcase name="invoke_quantityHabitWithoutMultipleUpdates_reusesExistingEntryId" classname="com.threemdroid.habittracker.feature.home.domain.RecordHomeHabitProgressUseCaseTest" time="0.001"/>
-  <testcase name="invoke_withoutRequestedValue_usesDefaultIncrementAndDateScopedId" classname="com.threemdroid.habittracker.feature.home.domain.RecordHomeHabitProgressUseCaseTest" time="0.006"/>
+  <testcase name="invoke_whenMultipleUpdatesAreAllowed_generatesNewEntryId" classname="com.threemdroid.habittracker.feature.home.domain.RecordHomeHabitProgressUseCaseTest" time="0.005"/>
+  <testcase name="invoke_quantityHabitWithoutMultipleUpdates_reusesExistingEntryId" classname="com.threemdroid.habittracker.feature.home.domain.RecordHomeHabitProgressUseCaseTest" time="0.002"/>
+  <testcase name="invoke_withoutRequestedValue_usesDefaultIncrementAndDateScopedId" classname="com.threemdroid.habittracker.feature.home.domain.RecordHomeHabitProgressUseCaseTest" time="0.005"/>
   <testcase name="invoke_booleanHabitWithoutMultipleUpdates_existingEntryIsNoOp" classname="com.threemdroid.habittracker.feature.home.domain.RecordHomeHabitProgressUseCaseTest" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>

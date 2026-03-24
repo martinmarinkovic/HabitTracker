@@ -1,6 +1,8 @@
 package com.threemdroid.habittracker.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.threemdroid.habittracker.feature.activity.ActivityDestination
@@ -17,18 +19,44 @@ import com.threemdroid.habittracker.feature.settings.SettingsDestination
 import com.threemdroid.habittracker.feature.settings.settingsScreen
 
 @Composable
-fun HabitTrackerApp() {
+fun HabitTrackerApp(
+    homeViewModelFactory: ViewModelProvider.Factory,
+) {
     val navController = rememberNavController()
 
     NavHost(
         navController = navController,
         startDestination = HomeDestination.route,
     ) {
-        homeScreen()
+        homeScreen(
+            viewModelFactory = homeViewModelFactory,
+            onCreateHabitRequested = {
+                navController.navigate(CreateHabitDestination.route)
+            },
+            onNavigateToActivity = {
+                navController.navigatePrimaryRoute(ActivityDestination.route)
+            },
+            onNavigateToLearn = {
+                navController.navigatePrimaryRoute(LearnDestination.route)
+            },
+            onNavigateToProfile = {
+                navController.navigatePrimaryRoute(ProfileDestination.route)
+            },
+        )
         createHabitScreen()
         activityScreen()
         learnScreen()
         profileScreen()
         settingsScreen()
+    }
+}
+
+private fun NavHostController.navigatePrimaryRoute(route: String) {
+    navigate(route) {
+        launchSingleTop = true
+        restoreState = true
+        popUpTo(graph.startDestinationId) {
+            saveState = true
+        }
     }
 }

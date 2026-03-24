@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.threemdroid.habittracker.feature.home.domain.ObserveHomeDataUseCaseTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-03-24T10:19:25.648Z" hostname="Martins-MacBook-Pro.local" time="0.007">
+<testsuite name="com.threemdroid.habittracker.feature.home.domain.ObserveHomeDataUseCaseTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-03-24T10:53:02.642Z" hostname="Martins-MacBook-Pro.local" time="0.012">
   <properties/>
-  <testcase name="invoke_filtersToActiveScheduledHabits_andAggregatesHomeSnapshot" classname="com.threemdroid.habittracker.feature.home.domain.ObserveHomeDataUseCaseTest" time="0.005"/>
-  <testcase name="invoke_whenMoodObservationFails_returnsTheFailure" classname="com.threemdroid.habittracker.feature.home.domain.ObserveHomeDataUseCaseTest" time="0.002"/>
+  <testcase name="invoke_filtersToActiveScheduledHabits_andAggregatesHomeSnapshot" classname="com.threemdroid.habittracker.feature.home.domain.ObserveHomeDataUseCaseTest" time="0.007"/>
+  <testcase name="invoke_whenMoodObservationFails_returnsTheFailure" classname="com.threemdroid.habittracker.feature.home.domain.ObserveHomeDataUseCaseTest" time="0.005"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

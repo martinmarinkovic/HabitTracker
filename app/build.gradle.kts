@@ -17,8 +17,13 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:database"))
     implementation(project(":core:designsystem"))
     implementation(project(":core:navigation"))
+    implementation(project(":data:activity"))
+    implementation(project(":data:habits"))
+    implementation(project(":domain:activity"))
+    implementation(project(":domain:habits"))
     implementation(project(":feature:activity"))
     implementation(project(":feature:create_habit"))
     implementation(project(":feature:home"))
@@ -27,4 +32,5 @@ dependencies {
     implementation(project(":feature:settings"))
 
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.room.runtime)
 }

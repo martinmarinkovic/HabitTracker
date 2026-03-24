@@ -246,3 +246,73 @@ Audit the new Home use-case test phase for architectural compliance, regression 
 
 ### Next Milestone
 Audit the iOS Home screen and confirm the intended mood ordering, schedule semantics, greeting behavior, and repeat-update rules before any Home route wiring or UI assembly begins.
+
+## 2026-03-24 Home UI Implementation
+### Scope
+Implement the Home feature UI and the minimum navigation/UI wiring required to render the existing Home MVI contract without expanding Home business behavior.
+
+### Completed
+- Replaced the Home placeholder with a Compose `HomeRoute` and `HomeScreen` that render greeting, mood summary, date selector, habits section, habit cards, loading/empty/error states, a quick-add bottom sheet, a habit action sheet, and a floating bottom navigation treatment with a center create CTA.
+- Added a public `homeViewModelFactory(...)` and minimal `HabitTrackerApp` wiring so the app now creates the Home repositories, supplies the `HomeViewModel`, and routes the Home screen into the existing navigation graph.
+- Added Home previews for content, empty, error, and quick-add states.
+- Added Home UI test tags plus Compose UI tests for boolean primary action dispatch, date selection, stop-habit action-sheet dispatch, retry dispatch, create-habit CTA dispatch, and quick-add validation rendering.
+- Resolved a direct `core:designsystem` dependency gap in `feature/home` and separated empty-state vs floating create-button test tags so the new UI tests target stable nodes.
+- Verified the changed scope with `./gradlew --no-daemon :feature:home:assembleDebug :feature:home:testDebugUnitTest :feature:home:assembleAndroidTest` and `./gradlew --no-daemon :app:assembleDebug`.
+
+### Observed Baseline
+- The Home feature is no longer a placeholder route; it now renders a conservative, shared-component-based UI on top of the existing Home MVI layer.
+- The UI intentionally avoids inventing new business rules: it only reflects already implemented Home logic, state, and effects.
+- Several Home visuals remain provisional because no sourced Home audit exists in the repo: mood is rendered as a read-only summary control, the date strip shows a 7-day selected-date-centered window, habit icons fall back to token/name monograms, color tokens map through semantic accents, and bottom navigation uses text monograms instead of sourced product icons.
+- Edit-habit navigation remains unbound at the app layer even though the Home effect exists, because no sourced edit destination or flow is documented in the repository.
+
+### Outstanding Blockers
+- Missing iOS Home screen inventory, screenshots, and state audit.
+- Missing sourced Home copy, icon set, color mapping, and bottom-navigation visual spec.
+- Missing sourced rules for Home mood interaction treatment and Home action-sheet behavior.
+- Final DI integration remains deferred; Home currently uses minimal app-level repository and factory assembly.
+
+### Next Milestone
+Import verified iOS Home references and reconcile the new `feature/home` UI against them before treating any Home visual treatment, copy, mood control behavior, or bottom-navigation styling as parity-final.
+
+## 2026-03-24 Home UI Review Follow-Up
+### Scope
+Audit the new Home UI phase for architecture compliance, MVI compliance, regression risk, and unresolved product-flow exposure.
+
+### Completed
+- Reviewed the new `feature/home` UI, UI tests, and minimal app-level Home wiring against the architecture, state-management, design-system, and parity docs.
+- Fixed a broken Home action-sheet interaction by hiding the `Edit Habit` row whenever no edit-flow callback is actually wired, instead of exposing a no-op action.
+- Kept Home context-sheet selection as purely ephemeral Compose state by using `remember` instead of `rememberSaveable`, so it no longer restores outside the feature `UiState` contract.
+- Added a Compose UI test to verify that the unresolved edit action is not rendered when edit flow support is unavailable.
+- Logged the Home UI visual and copy fallback assumptions in `docs/known_assumptions_and_gaps.md`.
+- Re-ran `./gradlew --no-daemon :feature:home:assembleDebug :feature:home:assembleAndroidTest :app:assembleDebug`.
+
+### Remaining Risks
+- `HabitTrackerApp` still constructs the Room database and repositories directly inside a Composable instead of using Hilt-owned production DI wiring.
+- Home visual treatment, copy, and some affordances remain provisional because the iOS Home audit is still missing.
+- `HomeRoute` still uses non-lifecycle-aware one-shot effect collection, so the current presentation integration is serviceable but not yet ideal.
+
+### Next Milestone
+Import verified iOS Home references and replace the current app-level Home wiring bridge with real Hilt wiring before expanding Home navigation or treating the UI as parity-final.
+
+## 2026-03-24 App-Shell DI Fix
+### Scope
+Remove direct Room and repository construction from the app composable shell and make database/repository ownership Hilt-managed without changing Home behavior.
+
+### Completed
+- Added an app-level Hilt module that provides the singleton `HabitTrackerDatabase` plus `HabitsRepository` and `ActivityRepository` interface bindings.
+- Injected the Home repository interfaces into `MainActivity` and moved `homeViewModelFactory(...)` assembly there.
+- Updated `HabitTrackerApp` so it now consumes the already-assembled Home `ViewModelProvider.Factory` instead of constructing Room and repositories inside a Composable.
+- Re-ran `./gradlew --no-daemon :feature:home:assembleDebug` and `./gradlew --no-daemon :app:assembleDebug`.
+
+### Observed Baseline
+- Room/database creation and repository implementation creation are now Hilt-owned at the app layer.
+- The app shell no longer constructs persistence or repository objects from Composables.
+- Home still uses the existing manual `homeViewModelFactory(...)` pattern, but it is now built from injected interfaces at the activity boundary rather than from Composable-owned objects.
+
+### Remaining Risks
+- Home effect collection in `HomeRoute` is still not lifecycle-aware.
+- Home UI parity remains blocked on missing iOS screenshots, state inventory, iconography, and copy references.
+- Full feature-level Hilt ViewModel integration is still deferred; the current fix addresses app-shell DI ownership only.
+
+### Next Milestone
+Import verified iOS Home references and reconcile the current Home UI assumptions before making further Home presentation or navigation changes.
