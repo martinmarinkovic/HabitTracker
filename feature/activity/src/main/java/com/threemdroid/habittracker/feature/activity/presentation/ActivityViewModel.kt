@@ -11,8 +11,10 @@ import com.threemdroid.habittracker.feature.activity.domain.ObserveActivityDataU
 import com.threemdroid.habittracker.feature.activity.domain.nextAnchorDate
 import com.threemdroid.habittracker.feature.activity.domain.previousAnchorDate
 import com.threemdroid.habittracker.feature.activity.domain.windowFor
+import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.Clock
 import java.time.LocalDate
+import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,11 +23,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
-internal class ActivityViewModel(
+@HiltViewModel
+internal class ActivityViewModel @Inject constructor(
     private val observeActivityDataUseCase: ObserveActivityDataUseCase,
-    private val clock: Clock = Clock.systemDefaultZone(),
-    private val defaultPeriod: ActivityPeriod = ActivityPeriod.WEEKLY,
+    private val clock: Clock,
 ) : ViewModel() {
+    private val defaultPeriod: ActivityPeriod = ActivityPeriod.WEEKLY
     private val initialAnchorDate: LocalDate = LocalDate.now(clock)
     private val initialWindow = defaultPeriod.windowFor(initialAnchorDate)
 

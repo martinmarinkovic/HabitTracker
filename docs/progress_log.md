@@ -465,3 +465,63 @@ Close the remaining direct business-logic test gap for Activity analytics withou
 
 ### Next Milestone
 Import verified iOS Activity references and analytics semantics, then reconcile the now-tested Activity assumptions before wiring `ActivityViewModel` into the route or building any non-final Activity UI.
+
+## 2026-03-24 Activity UI Implementation
+### Scope
+Implement the Activity screen and the minimum required route/app wiring on top of the existing Activity MVI logic without changing analytics behavior or widening repository contracts.
+
+### Completed
+- Replaced the Activity placeholder route with a conservative Compose `ActivityRoute` and `ActivityScreen` backed by the existing `ActivityViewModel`.
+- Added Activity UI rendering for the title, daily/weekly/monthly segmented tabs, current-period header card, previous/next controls, habit filter entry, analytics summary card, chart card, habit-selection sheet, and loading/empty/error states.
+- Added an `activityViewModelFactory(...)` and minimal wiring in `MainActivity` and `HabitTrackerApp` so the Activity destination now consumes the existing logic layer without introducing new feature behavior.
+- Added Activity previews, UI test tags, and Compose UI tests for basic rendering plus period switching, previous/next navigation, habit-filter-sheet selection, and retry behavior.
+- Verified the changed scope with `./gradlew --no-daemon :feature:activity:assembleDebug :feature:activity:testDebugUnitTest :feature:activity:assembleAndroidTest :app:assembleDebug`.
+
+### Observed Baseline
+- Activity is no longer a placeholder route; it now renders a conservative feature UI on top of the existing tested analytics state.
+- The period header uses explicit date-range copy and a simple habit-filter entry because no sourced Activity chrome or control labels exist in the repository.
+- The chart stays day-granular and renders simple vertical bars directly from the current `chartData` completion ratios; no gestures, drill-down, or extra analytics overlays were added.
+- The habit filter uses a single-choice bottom sheet and dismisses after selection, which keeps the interaction narrow until sourced Activity filter behavior exists.
+
+### Remaining Risks
+- Activity visual parity remains blocked on missing iOS screenshots, chart treatments, filter-sheet references, and copy.
+- Header wording, analytics labels, empty/error copy, and the simple bar-chart presentation remain provisional because the iOS Activity audit is still missing.
+- The new Compose UI tests were compiled into the Android test artifact, but they were not executed on a device or emulator in this session.
+
+### Next Milestone
+Import verified iOS Activity screenshots, chart states, filter-sheet references, and analytics semantics, then reconcile the implemented Activity screen against sourced parity requirements before treating the feature as parity-final.
+
+## 2026-03-24 Activity UI Review Follow-Up
+### Scope
+Audit the new Activity UI phase for architecture compliance, MVI compliance, regression risk, and documentation completeness.
+
+### Completed
+- Reviewed the Activity route, screen assembly, minimal app wiring, previews, and Compose UI tests against the architecture, state-management, parity, and regression docs.
+- Added the missing durable Activity UI assumption row to `docs/known_assumptions_and_gaps.md` so the long-term blocker ledger now matches the fallback visual and interaction decisions already recorded in the progress log and handoff.
+
+### Remaining Risks
+- Activity visual behavior is still assumption-driven because the iOS Activity audit is missing.
+- The current Activity UI tests cover `ActivityScreen`, not full `ActivityRoute` integration, and they do not directly cover loading/empty rendering or filter-sheet dismissal behavior.
+- The Android UI tests were compiled into the debug Android test artifact, but they were not executed on a device or emulator in this review session.
+
+### Next Milestone
+Import verified iOS Activity screenshots, chart states, filter-sheet references, and analytics semantics, then reconcile the implemented Activity screen and its newly logged UI assumptions before accepting the feature as parity-final.
+
+## 2026-03-24 Activity Hilt ViewModel Wiring
+### Scope
+Remove the manual factory-based Activity ViewModel wiring and move Activity onto the project-standard Hilt-owned ViewModel path without changing Activity analytics behavior or UI behavior.
+
+### Completed
+- Annotated `ActivityViewModel` with `@HiltViewModel` and moved its constructor dependencies onto injected `ObserveActivityDataUseCase` and `Clock` providers.
+- Made `ObserveActivityDataUseCase` injectable and added a singleton `Clock` provider in the app Hilt module so the Activity dependency graph is Hilt-owned end to end.
+- Removed the manual `activityViewModelFactory(...)` path from the Activity feature entry, `MainActivity`, and `HabitTrackerApp`.
+- Switched `ActivityRoute` to resolve its ViewModel with `hiltViewModel()` instead of a manually passed `ViewModelProvider.Factory`.
+- Verified the changed scope with `./gradlew --no-daemon :feature:activity:assembleDebug :feature:activity:testDebugUnitTest :feature:activity:assembleAndroidTest :app:assembleDebug`.
+
+### Remaining Risks
+- Home and Create Habit still use manual factory-based ViewModel wiring; this change only corrects the Activity path.
+- Activity parity remains blocked on missing iOS screenshots, chart treatments, filter-sheet references, and analytics semantics.
+- The Activity Android UI tests still compile successfully but were not executed on a device or emulator in this session.
+
+### Next Milestone
+Import verified iOS Activity screenshots, chart states, filter-sheet references, and analytics semantics, then reconcile the implemented Activity screen against sourced parity requirements before changing chart visuals, filter-sheet behavior, copy, or period-navigation treatment.

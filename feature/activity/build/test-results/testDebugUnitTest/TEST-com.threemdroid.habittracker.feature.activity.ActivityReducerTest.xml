@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.threemdroid.habittracker.feature.activity.ActivityReducerTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-03-24T13:41:43.388Z" hostname="Martins-MacBook-Pro.local" time="0.018">
+<testsuite name="com.threemdroid.habittracker.feature.activity.ActivityReducerTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-03-24T14:34:25.001Z" hostname="Martins-MacBook-Pro.local" time="0.023">
   <properties/>
-  <testcase name="reduce_configurationChanged_setsLoadingAndClearsAnalytics" classname="com.threemdroid.habittracker.feature.activity.ActivityReducerTest" time="0.016"/>
-  <testcase name="reduce_activityDataLoaded_withoutHabits_setsEmptyState" classname="com.threemdroid.habittracker.feature.activity.ActivityReducerTest" time="0.0"/>
-  <testcase name="reduce_activityDataLoadFailed_setsErrorState" classname="com.threemdroid.habittracker.feature.activity.ActivityReducerTest" time="0.001"/>
+  <testcase name="reduce_configurationChanged_setsLoadingAndClearsAnalytics" classname="com.threemdroid.habittracker.feature.activity.ActivityReducerTest" time="0.021"/>
+  <testcase name="reduce_activityDataLoaded_withoutHabits_setsEmptyState" classname="com.threemdroid.habittracker.feature.activity.ActivityReducerTest" time="0.001"/>
+  <testcase name="reduce_activityDataLoadFailed_setsErrorState" classname="com.threemdroid.habittracker.feature.activity.ActivityReducerTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

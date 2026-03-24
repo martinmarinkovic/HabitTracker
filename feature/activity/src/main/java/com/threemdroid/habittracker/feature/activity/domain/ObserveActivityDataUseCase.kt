@@ -11,6 +11,7 @@ import com.threemdroid.habittracker.feature.activity.contract.ActivityHabitFilte
 import com.threemdroid.habittracker.feature.activity.contract.ActivityPeriod
 import java.time.Clock
 import java.time.LocalDate
+import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -19,9 +20,9 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class ObserveActivityDataUseCase(
+internal class ObserveActivityDataUseCase @Inject constructor(
     private val habitsRepository: HabitsRepository,
-    private val clock: Clock = Clock.systemDefaultZone(),
+    private val clock: Clock,
 ) {
     operator fun invoke(
         period: ActivityPeriod,

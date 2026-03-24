@@ -35,6 +35,14 @@
 - Added Activity unit tests for analytics aggregation and failure handling, reducer state transitions, and ViewModel period/filter/navigation behavior.
 - Reviewed the Activity logic phase and documented that Activity currently inherits the same empty `selectedDays` => every-day schedule fallback already used elsewhere in the app, so the assumption ledger now matches the implementation more precisely.
 - Added direct Activity use-case coverage for the previously under-tested analytics rules: empty `selectedDays` => every-day fallback plus created-at and stopped-at historical gating.
+- Replaced the Activity placeholder route with a conservative Compose `ActivityRoute` and `ActivityScreen` backed by the existing `ActivityViewModel`.
+- Added Activity UI rendering for the title, daily/weekly/monthly segmented tabs, current-period header card, previous/next controls, habit filter entry, analytics summary card, chart card, habit-selection sheet, and loading/empty/error states.
+- Added an `activityViewModelFactory(...)`, minimal app-level factory wiring in `MainActivity`, and navigation-graph wiring in `HabitTrackerApp` so the Activity route now consumes the existing Activity MVI logic without widening feature behavior.
+- Added Activity previews, UI test tags, and Compose UI tests for basic rendering plus critical period-switching, period-navigation, habit-filter-sheet, and retry interactions.
+- Reviewed the Activity UI phase and added the missing durable Activity UI assumption row to `docs/known_assumptions_and_gaps.md` so the blocker ledger now matches the current screen implementation.
+- Moved Activity off the manual `activityViewModelFactory(...)` path and onto a Hilt-owned `@HiltViewModel` integration.
+- Made `ObserveActivityDataUseCase` injectable, added a singleton `Clock` provider to the app Hilt module, and switched `ActivityRoute` to resolve `ActivityViewModel` through `hiltViewModel()`.
+- Removed the Activity-specific manual factory wiring from `MainActivity` and `HabitTrackerApp` while keeping current Activity behavior unchanged.
 
 ## Key Decisions
 - Home now has strict MVI contracts with reducer-driven state updates and channel-backed one-time effects.
@@ -58,6 +66,9 @@
 - Activity currently defaults to `WEEKLY`, uses ISO Monday-through-Sunday weekly windows and calendar-month monthly windows, keeps chart points day-granular across all period modes, and allows next-period navigation without a future bound because no sourced Activity period semantics exist in the repository.
 - Activity analytics currently average capped per-habit completion ratios across scheduled habit-days, treat `doneDays` for the all-habits filter as dates where every scheduled filtered habit reached its current target, expose all stored habits as filter options, keep zero-entry periods as content with zero metrics when habits exist, inherit the current empty `selectedDays` => every-day schedule fallback, and use current habit schedule/target/lifecycle metadata across historical dates because there is no versioned habit-history model.
 - The Activity use-case test surface now directly covers the currently implemented schedule fallback and historical lifecycle gating assumptions instead of leaving them implied by the analytics implementation.
+- Activity UI now stays intentionally conservative where source is missing: it uses a plain title-based top section instead of sourced iconography, a tinted period header card with explicit date-range text, a simple single-choice habit filter sheet that dismisses after selection, a day-granular vertical bar chart derived directly from the existing `chartData`, and provisional English copy for analytics labels plus loading/empty/error states.
+- Activity still does not add bottom navigation, extra chart interactions, or new analytics behaviors because those flows are not sourced in the repository today.
+- Activity dependency ownership now matches the project-standard Hilt path: the Activity route resolves `ActivityViewModel` through `hiltViewModel()`, and the app shell no longer assembles an Activity-specific manual factory.
 
 ## Blockers
 - No iOS Home screen inventory, flow audit, or state inventory exists in the repository.
@@ -73,7 +84,8 @@
 - The new Create Habit UI is buildable, but it is still assumption-driven and cannot be treated as parity-final until the iOS Create Habit audit exists.
 - No iOS Activity screen inventory, screenshots, or analytics-state audit exists in the repository.
 - No sourced Activity default period, completion-percentage semantics, done-day rule, chart granularity, or future-period navigation rule exists in the repository.
-- The new Activity logic layer is buildable and directly tested, but it remains assumption-driven and cannot be treated as parity-final until the iOS Activity audit exists.
+- The new Activity UI is buildable, but it remains assumption-driven and cannot be treated as parity-final until the iOS Activity audit exists.
+- The Activity Compose UI tests compile into the Android test artifact, but they were not executed on a device or emulator in this session.
 
 ## Validation
 - `./gradlew :feature:home:testDebugUnitTest :feature:home:assembleDebug :data:habits:assembleDebug` completed successfully.
@@ -92,6 +104,8 @@
 - `./gradlew --no-daemon :feature:activity:testDebugUnitTest :feature:activity:assembleDebug` completed successfully after adding the Activity MVI logic layer and analytics tests.
 - `./gradlew --no-daemon :app:assembleDebug` completed successfully after the Activity feature-module changes.
 - `./gradlew --no-daemon :feature:activity:testDebugUnitTest` completed successfully after adding direct coverage for the Activity schedule fallback and created-at / stopped-at gating rules.
+- `./gradlew --no-daemon :feature:activity:assembleDebug :feature:activity:testDebugUnitTest :feature:activity:assembleAndroidTest :app:assembleDebug` completed successfully after the Activity UI implementation and minimal app wiring.
+- `./gradlew --no-daemon :feature:activity:assembleDebug :feature:activity:testDebugUnitTest :feature:activity:assembleAndroidTest :app:assembleDebug` completed successfully after moving Activity onto the Hilt-owned ViewModel path.
 
 ## Exact Next Recommended Step
-Import verified iOS Activity screenshots, chart states, and analytics semantics, then update [docs/ios_screen_inventory.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/ios_screen_inventory.md), [docs/feature_parity_checklist.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/feature_parity_checklist.md), and [docs/ui_parity_checklist.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/ui_parity_checklist.md) against the now-tested Activity logic before wiring `ActivityViewModel` into [ActivityFeatureEntry.kt](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/feature/activity/src/main/java/com/threemdroid/habittracker/feature/activity/ActivityFeatureEntry.kt) or building any non-final Activity UI.
+Import verified iOS Activity screenshots, chart states, filter-sheet references, and analytics semantics, then update [docs/ios_screen_inventory.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/ios_screen_inventory.md), [docs/feature_parity_checklist.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/feature_parity_checklist.md), and [docs/ui_parity_checklist.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/ui_parity_checklist.md) against the now-implemented Activity screen before changing chart visuals, filter-sheet behavior, copy, or period-navigation treatment.

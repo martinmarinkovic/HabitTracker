@@ -7,6 +7,7 @@ import com.threemdroid.habittracker.data.activity.repository.ActivityRepositoryI
 import com.threemdroid.habittracker.data.habits.repository.HabitsRepositoryImpl
 import com.threemdroid.habittracker.domain.activity.ActivityRepository
 import com.threemdroid.habittracker.domain.habits.HabitsRepository
+import java.time.Clock
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,6 +20,10 @@ private const val HABIT_TRACKER_DATABASE_NAME = "habit_tracker.db"
 @Module
 @InstallIn(SingletonComponent::class)
 object AppDataModule {
+    @Provides
+    @Singleton
+    fun provideClock(): Clock = Clock.systemDefaultZone()
+
     @Provides
     @Singleton
     fun provideHabitTrackerDatabase(
