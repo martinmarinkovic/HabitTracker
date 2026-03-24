@@ -43,6 +43,19 @@
 - Moved Activity off the manual `activityViewModelFactory(...)` path and onto a Hilt-owned `@HiltViewModel` integration.
 - Made `ObserveActivityDataUseCase` injectable, added a singleton `Clock` provider to the app Hilt module, and switched `ActivityRoute` to resolve `ActivityViewModel` through `hiltViewModel()`.
 - Removed the Activity-specific manual factory wiring from `MainActivity` and `HabitTrackerApp` while keeping current Activity behavior unchanged.
+- Added `LearnUiState`, `LearnIntent`, `LearnEffect`, a pure reducer, a feature-local `ObserveLearnContentUseCase`, and an `@HiltViewModel`-owned `LearnViewModel` in `feature/learn`.
+- Replaced the Learn placeholder route with a conservative Compose Learn flow that now renders a main grid, detail screen, optional Coil-backed image treatment, paragraph sections when explicit text exists, optional video CTA wiring, and loading/empty/error states.
+- Added a minimal Hilt binding module in `data:learn` so `LearnRepositoryImpl` is resolved through DI, then wired `LearnRoute` to the project-standard Hilt ViewModel path.
+- Added Learn previews, UI test tags, unit tests for the use case/reducer/ViewModel layers, and Compose UI tests for main-grid rendering plus detail-opening basics.
+- Logged the new Learn runtime and UI assumptions in `docs/known_assumptions_and_gaps.md`, including the fact that repository-backed production Learn content still maps title-only data and currently resolves to the `Unavailable` error path.
+- Continued the interrupted Learn phase from the existing working-tree implementation instead of recreating it, and confirmed the current Learn production code already covered the requested grid/detail/MVI surface.
+- Added Learn follow-up coverage for selection retention/clearing, empty-content ViewModel behavior, unknown article selection handling, loading/empty/error UI rendering, retry dispatch, and video-CTA intent dispatch.
+- Added Learn loading/empty/error previews and re-ran the Learn validation command so the current assumption-driven state surface is easier to inspect without widening the blocked Learn contract.
+- Replaced the blocked Learn API placeholder doc with the approved provisional runtime spec for this project: `index.json` categories, `{categoryId}.json` detail path, and derived `jpg` / `mp4` media URLs under `https://iomc.rs/rutinna/db/`.
+- Updated the Learn blocker ledger so the repo now records that a provisional runtime contract exists, while the field-level detail payload schema and iOS Learn parity references are still unresolved.
+- Verified the live Learn detail payload schema, expanded the shared Learn model only to the proven runtime fields (`imageUrl`, `videoUrl`, and detail `sections(id, title, body)`), replaced the Learn repository `Unavailable` stub with a real categories-plus-detail remote aggregation path, and updated Learn mapping/tests accordingly.
+- Audited the Profile implementation request against `docs/ios_screen_inventory.md` and the current Profile model/repository surface, then stopped implementation because the repository still has no verified Profile iOS screen inventory and no source-backed Profile contract beyond the provisional count-based `ProfileSummary`.
+- Added a durable Profile blocker row to `docs/known_assumptions_and_gaps.md` so the long-term gap ledger now explicitly records that the current Profile surface is insufficient for sourced Profile MVI or UI implementation.
 
 ## Key Decisions
 - Home now has strict MVI contracts with reducer-driven state updates and channel-backed one-time effects.
@@ -69,6 +82,12 @@
 - Activity UI now stays intentionally conservative where source is missing: it uses a plain title-based top section instead of sourced iconography, a tinted period header card with explicit date-range text, a simple single-choice habit filter sheet that dismisses after selection, a day-granular vertical bar chart derived directly from the existing `chartData`, and provisional English copy for analytics labels plus loading/empty/error states.
 - Activity still does not add bottom navigation, extra chart interactions, or new analytics behaviors because those flows are not sourced in the repository today.
 - Activity dependency ownership now matches the project-standard Hilt path: the Activity route resolves `ActivityViewModel` through `hiltViewModel()`, and the app shell no longer assembles an Activity-specific manual factory.
+- Learn now has a real MVI/UI implementation backed by a real provisional runtime data path: the repository fetches `index.json`, fetches each `{categoryId}.json` array of `{ id, title, body }` detail items, derives `jpg` / `mp4` URLs from the category id, and the feature maps those sections into the current detail paragraph cards.
+- The Learn continuation follow-up intentionally changed coverage and previews only; it did not widen the Learn data contract or rework the existing production UI/state flow that was already present in the interrupted session.
+- Learn now has an approved provisional runtime spec for the category list endpoint, detail payload schema, and derived media URLs, but the repo still lacks verified iOS Learn screen inventory and parity references.
+- To keep the Learn change inside the allowed scope, `feature:learn` currently depends on `data:learn` for the Hilt binding path; that is functional, but it should be revisited when broader DI cleanup is intentionally in scope.
+- The Learn data path now surfaces derived `videoUrl` values to the existing feature state, but the app shell still does not wire `onVideoRequested` end to end, so the current `Play Video` CTA remains an integration follow-up rather than a parity-complete flow.
+- Profile remains intentionally blocked: `ProfileFeatureEntry` is still a placeholder route, and the current `ProfileSummary` contract is only a provisional count aggregate with no sourced identity/avatar/settings/mood-analytics surface.
 
 ## Blockers
 - No iOS Home screen inventory, flow audit, or state inventory exists in the repository.
@@ -86,6 +105,11 @@
 - No sourced Activity default period, completion-percentage semantics, done-day rule, chart granularity, or future-period navigation rule exists in the repository.
 - The new Activity UI is buildable, but it remains assumption-driven and cannot be treated as parity-final until the iOS Activity audit exists.
 - The Activity Compose UI tests compile into the Android test artifact, but they were not executed on a device or emulator in this session.
+- No verified Learn iOS screen inventory or parity references exist in the repository yet.
+- `feature:learn` still depends directly on `data:learn` for the current Hilt binding path, which violates the target architecture boundary.
+- The Learn data path now exposes derived `videoUrl`, but the app shell still passes a no-op `onVideoRequested` callback, so Learn video playback is not wired end to end.
+- The Learn Compose UI tests compile into the Android test artifact, but they were not executed on a device or emulator in this session.
+- No verified Profile iOS screen inventory, identity/avatar contract, settings-shortcut behavior, period-switching rule, or mood-analytics spec exists in the repository.
 
 ## Validation
 - `./gradlew :feature:home:testDebugUnitTest :feature:home:assembleDebug :data:habits:assembleDebug` completed successfully.
@@ -106,6 +130,10 @@
 - `./gradlew --no-daemon :feature:activity:testDebugUnitTest` completed successfully after adding direct coverage for the Activity schedule fallback and created-at / stopped-at gating rules.
 - `./gradlew --no-daemon :feature:activity:assembleDebug :feature:activity:testDebugUnitTest :feature:activity:assembleAndroidTest :app:assembleDebug` completed successfully after the Activity UI implementation and minimal app wiring.
 - `./gradlew --no-daemon :feature:activity:assembleDebug :feature:activity:testDebugUnitTest :feature:activity:assembleAndroidTest :app:assembleDebug` completed successfully after moving Activity onto the Hilt-owned ViewModel path.
+- `./gradlew --no-daemon :feature:learn:assembleDebug :feature:learn:testDebugUnitTest :feature:learn:assembleAndroidTest :app:assembleDebug` completed successfully after the Learn MVI, Hilt wiring, and UI implementation.
+- `./gradlew --no-daemon :feature:learn:assembleDebug :feature:learn:testDebugUnitTest :feature:learn:assembleAndroidTest :app:assembleDebug` completed successfully after the Learn continuation follow-up coverage and preview additions.
+- No build validation was required in the Learn runtime spec approval follow-up because this session updated documentation only.
+- `./gradlew --no-daemon :data:learn:testDebugUnitTest :feature:learn:testDebugUnitTest :feature:learn:assembleDebug :app:assembleDebug` completed successfully after implementing the Learn runtime data path and mapping updates.
 
 ## Exact Next Recommended Step
-Import verified iOS Activity screenshots, chart states, filter-sheet references, and analytics semantics, then update [docs/ios_screen_inventory.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/ios_screen_inventory.md), [docs/feature_parity_checklist.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/feature_parity_checklist.md), and [docs/ui_parity_checklist.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/ui_parity_checklist.md) against the now-implemented Activity screen before changing chart visuals, filter-sheet behavior, copy, or period-navigation treatment.
+Remove the direct `feature:learn` -> `data:learn` dependency by moving the Learn Hilt binding/integration out of the feature module, then either wire `LearnEffect.OpenVideo` to a real app-level launcher or suppress the Learn video CTA until that launcher exists.

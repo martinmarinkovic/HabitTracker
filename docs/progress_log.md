@@ -525,3 +525,151 @@ Remove the manual factory-based Activity ViewModel wiring and move Activity onto
 
 ### Next Milestone
 Import verified iOS Activity screenshots, chart states, filter-sheet references, and analytics semantics, then reconcile the implemented Activity screen against sourced parity requirements before changing chart visuals, filter-sheet behavior, copy, or period-navigation treatment.
+
+## 2026-03-24 Learn Implementation Attempt
+### Scope
+Attempt to implement the Learn feature MVI, ViewModel wiring, and UI within `feature/learn` only, without inventing unsourced Learn API behavior or screen states.
+
+### Completed
+- Audited `docs/learn_api_spec.md`, `docs/ios_screen_inventory.md`, the current Learn repository boundary, and the existing Learn feature placeholder before starting code changes.
+- Confirmed that the repository still has no verified Learn API contract, no iOS Learn screen inventory, and no usable Learn content model beyond the compile-safe `id` / `title` placeholder.
+- Stopped implementation rather than inventing a Learn grid, detail flow, image loading behavior, paragraph rendering, or optional video behavior that is not backed by source material.
+
+### Remaining Risks
+- Learn remains fully blocked on product/API source intake, so any attempt to build MVI, UI states, navigation, or Coil-backed rendering now would encode speculative behavior into the app.
+- The current `LearnRepository` still intentionally returns `Unavailable`, and the existing `LearnContent` model is too narrow to support sourced detail/image/video rendering.
+- `docs/current_session_handoff.md` previously pointed at Activity parity follow-up work, so future sessions need to check the updated handoff rather than assuming Learn is implementation-ready.
+
+### Next Milestone
+Import verified Learn source material first: a real iOS Learn screen inventory plus a field-level Learn contract that defines categories/list content, detail paragraphs, image URL rules, optional video requirements, and empty/loading/error behavior before any Learn MVI or UI implementation begins.
+
+## 2026-03-24 Learn Attempt Review Follow-Up
+### Scope
+Audit the blocked Learn implementation attempt for scope compliance, documentation completeness, and hidden assumptions.
+
+### Completed
+- Confirmed the phase correctly avoided unsourced Learn MVI/UI/API implementation and stayed inside documentation-only scope.
+- Added a durable Learn blocker row to `docs/known_assumptions_and_gaps.md` so the long-term gap ledger now records that the current `LearnContent` model surface is only a compile-safe placeholder and is insufficient for sourced list/detail/image/video rendering.
+
+### Remaining Risks
+- Learn is still fully blocked until real iOS Learn references and a field-level Learn contract are imported.
+- The Learn feature remains a placeholder route with no verified screen/state inventory.
+
+### Next Milestone
+Import verified Learn source material first: a real iOS Learn screen inventory plus a field-level Learn contract that defines categories/list content, detail paragraphs, image URL rules, optional video requirements, and empty/loading/error behavior before any Learn MVI or UI implementation begins.
+
+## 2026-03-24 Learn Implementation Recheck
+### Scope
+Re-check whether the repository now contains enough Learn source material to start MVI, ViewModel wiring, and UI implementation without inventing product or API behavior.
+
+### Completed
+- Re-read `docs/learn_api_spec.md`, `docs/ios_screen_inventory.md`, `docs/current_session_handoff.md`, and the current Learn module surface.
+- Confirmed the repository still does not contain a verified Learn API contract, Learn iOS screen inventory, or a field-level Learn content model beyond the compile-safe placeholder.
+- Intentionally made no Learn code changes because implementing grid/detail UI, image loading, paragraphs, or optional video handling would still require guesswork.
+
+### Remaining Risks
+- Learn remains fully blocked until product/API source intake happens.
+- Repeated implementation requests can create churn if future sessions do not honor the existing Learn blockers first.
+
+### Next Milestone
+Import verified Learn source material first: a real iOS Learn screen inventory plus a field-level Learn contract that defines categories/list content, detail paragraphs, image URL rules, optional video requirements, and empty/loading/error behavior before any Learn MVI or UI implementation begins.
+
+## 2026-03-24 Profile Implementation Attempt
+### Scope
+Attempt to implement the Profile feature logic and UI within `feature/profile` only, without inventing unsourced Profile screen behavior, analytics semantics, or identity fields.
+
+### Completed
+- Audited `docs/ios_screen_inventory.md`, `docs/current_session_handoff.md`, the current Profile repository/model surface, and the existing Profile feature placeholder before starting code changes.
+- Confirmed the repository still has no verified Profile iOS screen inventory and no source-backed Profile contract beyond the provisional count-based `ProfileSummary` aggregate.
+- Stopped implementation rather than inventing a profile header, avatar treatment, change-photo affordance, settings shortcut, period switching, or mood analytics behavior that is not backed by source material.
+- Added a durable Profile blocker row to `docs/known_assumptions_and_gaps.md` so the long-term gap ledger now records that the current Profile surface is insufficient for sourced Profile MVI or UI implementation.
+
+### Remaining Risks
+- Profile remains fully blocked on product source intake, so any attempt to build MVI, UI states, or analytics cards now would encode speculative behavior into the app.
+- The current `ProfileSummary` model only exposes aggregate counts and cannot support sourced identity/avatar or mood-analytics rendering without a verified contract expansion.
+- No build validation was necessary in this session because no production code changed.
+
+### Next Milestone
+Import verified Profile source material first: add the real Profile screen inventory to `docs/ios_screen_inventory.md` and document the source-backed Profile contract and screen states before implementing any Profile MVI, UI, avatar behavior, settings affordance, period switching, or mood analytics.
+
+## 2026-03-24 Learn MVI And UI Implementation
+### Scope
+Implement the Learn feature MVI, Hilt-owned ViewModel wiring, and conservative grid/detail UI within `feature/learn`, with only the minimal `domain:learn` / `data:learn` support needed to consume the existing repository boundary.
+
+### Completed
+- Added `LearnUiState`, `LearnIntent`, `LearnEffect`, a pure reducer, and an `@HiltViewModel`-owned `LearnViewModel` in `feature/learn`.
+- Added a feature-local `ObserveLearnContentUseCase` that maps the current repository surface into title-first Learn UI models without inventing unsourced backend fields.
+- Replaced the Learn placeholder route with a conservative Compose Learn flow: main grid, detail screen, loading/empty/error states, paragraph rendering when explicit text exists, Coil-backed optional image rendering, and an optional video CTA extension point.
+- Added a Hilt binding module in `data:learn` so `LearnRepositoryImpl` is resolved through DI instead of direct construction.
+- Kept the existing repository behavior unchanged: the production repository-backed Learn path still returns `Unavailable` because the verified Learn contract is missing.
+- Added unit tests for the Learn use case, reducer, and ViewModel state handling plus Compose UI tests for main-grid rendering and detail-opening basics.
+- Verified the changed scope with `./gradlew --no-daemon :feature:learn:assembleDebug :feature:learn:testDebugUnitTest :feature:learn:assembleAndroidTest :app:assembleDebug`.
+
+### Remaining Risks
+- Learn parity is still blocked by missing verified iOS Learn screenshots, flow/state inventory, and field-level API/local-content contract details.
+- The shared/domain Learn model surface still only exposes `id` and `title`, so repository-backed production Learn content currently resolves to title-only mapping and the unavailable/error state.
+- To keep the change inside scope, `feature:learn` currently depends on `data:learn` for the Hilt binding path; that works, but it should be revisited once the broader app DI topology is intentionally cleaned up.
+- The Learn Android UI tests were assembled successfully but were not executed on a device or emulator in this session.
+
+### Next Milestone
+Import verified Learn source material first: populate the real Learn screen inventory in `docs/ios_screen_inventory.md` and replace the blocked placeholders in `docs/learn_api_spec.md` with a field-level contract covering list/category content, detail paragraphs, image rules, optional video requirements, and loading/empty/error behavior before reconciling the implemented Learn UI toward parity-final behavior.
+
+## 2026-03-24 Learn Continuation Follow-Up
+### Scope
+Continue the interrupted Learn phase from the existing working-tree implementation, verify the current Learn feature state, and close the remaining coverage gaps without recreating already-added Learn production code.
+
+### Completed
+- Re-read the required docs plus the current `feature/learn` and `data/learn` implementation before changing anything, then confirmed the interrupted session had already added the requested Learn grid/detail, Coil image hook, loading/empty/error states, and MVI wiring.
+- Verified the existing Learn implementation remained buildable by re-running `./gradlew --no-daemon :feature:learn:assembleDebug :feature:learn:testDebugUnitTest :feature:learn:assembleAndroidTest :app:assembleDebug`.
+- Added Learn follow-up coverage instead of duplicating production code: reducer tests for selection preservation/clearing on reload, ViewModel tests for empty-content and unknown-selection handling, and Compose UI tests for loading, empty, error/retry, and video-CTA intent paths.
+- Added Learn previews for loading, empty, and error states so the current assumption-driven screen surface is easier to inspect without widening the blocked Learn data contract.
+
+### Remaining Risks
+- Learn parity is still blocked by missing verified iOS Learn screenshots, flow/state inventory, and field-level API/local-content contract details.
+- The shared/domain Learn model surface still only exposes `id` and `title`, so repository-backed production Learn content currently resolves to title-only mapping and the unavailable/error state.
+- The Learn Android UI tests still compile into the Android test artifact only; they were not executed on a device or emulator in this session.
+
+### Next Milestone
+Import verified Learn source material first: populate the real Learn screen inventory in `docs/ios_screen_inventory.md` and replace the blocked placeholders in `docs/learn_api_spec.md` with a field-level contract covering list/category content, detail paragraphs, image rules, optional video requirements, and loading/empty/error behavior before reconciling the implemented Learn UI toward parity-final behavior.
+
+## 2026-03-24 Learn Runtime Spec Approval
+### Scope
+Replace the blocked Learn API placeholder with the approved provisional runtime spec provided for this project, without changing Learn production code in this session.
+
+### Completed
+- Replaced the blocked placeholder in `docs/learn_api_spec.md` with the approved provisional Learn runtime contract:
+  - categories endpoint `GET https://iomc.rs/rutinna/db/index.json`
+  - category response fields `title` and `id`
+  - detail endpoint `GET https://iomc.rs/rutinna/db/{categoryId}.json`
+  - derived media URLs for `jpg` and `mp4`
+- Recorded that category `id` is the canonical Learn key used for detail and media URL derivation.
+- Updated `docs/current_session_handoff.md` and `docs/known_assumptions_and_gaps.md` so the repo no longer claims Learn has no runtime contract at all.
+
+### Remaining Risks
+- The field-level `{categoryId}.json` detail payload schema is still not documented in the repo.
+- Learn iOS screen inventory and verified parity references are still missing.
+- No production code changed in this session, so the current Learn repository path still returns `Unavailable` until a follow-up implementation session uses this approved provisional spec.
+
+### Next Milestone
+Inspect one approved runtime `{categoryId}.json` payload and document only the actual detail-text/media fields it contains, then implement the Learn domain/data repository path against `index.json`, `{categoryId}.json`, and the derived media URL rules without widening the contract beyond what the runtime payload proves.
+
+## 2026-03-24 Learn Runtime Data Path Implementation
+### Scope
+Implement the real Learn repository/domain data path against the approved provisional runtime spec, keeping the model expansion limited to runtime-proven fields.
+
+### Completed
+- Verified the live `{categoryId}.json` detail payload shape from multiple categories and confirmed the current runtime contract is an array of `{ id, title, body }` items.
+- Updated [docs/learn_api_spec.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/learn_api_spec.md) so the field-level detail schema is now documented alongside the approved list, detail-path, and derived-media rules.
+- Expanded the shared Learn model only to the currently proven fields needed by the implemented Learn UI: derived `imageUrl`, derived `videoUrl`, and detail `sections(id, title, body)`.
+- Replaced the `Unavailable` Learn repository stub with a real remote aggregation path that fetches `index.json`, fetches each `{categoryId}.json` payload, maps DTOs explicitly into domain models, and derives `jpg` / `mp4` URLs from category id.
+- Updated the Learn use-case mapping so the current UI receives sourced image/video URLs and titled paragraph blocks built from runtime detail items.
+- Added direct repository mapping coverage in `data:learn`, updated Learn use-case mapping tests, and added a Learn ViewModel `OpenVideo` effect test.
+- Verified the changed surface with `./gradlew --no-daemon :data:learn:testDebugUnitTest :feature:learn:testDebugUnitTest :feature:learn:assembleDebug :app:assembleDebug`.
+
+### Remaining Risks
+- Learn still has no verified iOS screen inventory, so UI parity remains provisional.
+- `feature:learn` still depends directly on `data:learn` for Hilt binding resolution.
+- The current app shell still does not wire Learn video playback end to end, so the CTA needs a follow-up integration decision.
+
+### Next Milestone
+Move the Learn binding path out of `feature:learn`, then either wire `LearnEffect.OpenVideo` at the app level or suppress the Learn video CTA until that launcher exists.

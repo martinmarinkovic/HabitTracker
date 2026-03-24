@@ -1,1 +1,0 @@
--keep,allowobfuscation,allowshrinking class com.threemdroid.habittracker.feature.activity.presentation.ActivityViewModel
