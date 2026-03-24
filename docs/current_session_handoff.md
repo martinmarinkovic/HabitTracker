@@ -29,6 +29,12 @@
 - Added Create Habit previews, UI test tags, and Compose UI tests covering core rendering plus critical goal-sheet, picker, reminder, and save interactions.
 - Logged the new Create Habit UI fallback decisions in `docs/known_assumptions_and_gaps.md`, including provisional picker grouping, read-only reminder times, and manual picker dismissal behavior.
 - Reviewed the Create Habit UI phase and fixed the route-level effect collector so one-time effects are now collected with lifecycle awareness.
+- Added `ActivityUiState`, `ActivityIntent`, `ActivityEffect`, analytics summary/chart/filter models, a pure reducer, and `ActivityViewModel` in `feature/activity`.
+- Added a feature-local `ObserveActivityDataUseCase` that derives daily / weekly / monthly period windows, previous/next period navigation, all-habits versus selected-habit filtering, chart-ready daily points, average completion, done days, and total progress from the existing habits repository surface.
+- Kept `ActivityDestination` as the existing placeholder route so this phase stays logic-only and does not start unsourced Activity UI assembly.
+- Added Activity unit tests for analytics aggregation and failure handling, reducer state transitions, and ViewModel period/filter/navigation behavior.
+- Reviewed the Activity logic phase and documented that Activity currently inherits the same empty `selectedDays` => every-day schedule fallback already used elsewhere in the app, so the assumption ledger now matches the implementation more precisely.
+- Added direct Activity use-case coverage for the previously under-tested analytics rules: empty `selectedDays` => every-day fallback plus created-at and stopped-at historical gating.
 
 ## Key Decisions
 - Home now has strict MVI contracts with reducer-driven state updates and channel-backed one-time effects.
@@ -47,6 +53,11 @@
 - Create Habit UI now stays intentionally conservative where source is missing: the screen uses provisional English section copy, a single full-screen form, a modal Goal sheet, full-screen icon/color pickers with one provisional `Available` group, monogram or token-based visual placeholders instead of sourced assets, and reminder rows that show existing time values without exposing unsourced time-editing UI.
 - Picker selection updates feature state immediately but does not auto-dismiss the picker; users return to the form with manual back navigation until iOS dismissal behavior is sourced.
 - Create Habit now matches the project’s Compose integration rule for one-time effects: route-level effect collection is lifecycle-aware.
+- Activity now follows the same strict MVI baseline as Home and Create Habit: immutable `UiState`, reducer-style state updates, and a separate one-time `Effect` stream even though no Activity effect is currently emitted by the logic layer.
+- Activity analytics currently stay feature-local and build only on `domain:habits`; no new repository or database contract was introduced because the existing habit list and per-habit period-entry observers are sufficient for the current conservative analytics scope.
+- Activity currently defaults to `WEEKLY`, uses ISO Monday-through-Sunday weekly windows and calendar-month monthly windows, keeps chart points day-granular across all period modes, and allows next-period navigation without a future bound because no sourced Activity period semantics exist in the repository.
+- Activity analytics currently average capped per-habit completion ratios across scheduled habit-days, treat `doneDays` for the all-habits filter as dates where every scheduled filtered habit reached its current target, expose all stored habits as filter options, keep zero-entry periods as content with zero metrics when habits exist, inherit the current empty `selectedDays` => every-day schedule fallback, and use current habit schedule/target/lifecycle metadata across historical dates because there is no versioned habit-history model.
+- The Activity use-case test surface now directly covers the currently implemented schedule fallback and historical lifecycle gating assumptions instead of leaving them implied by the analytics implementation.
 
 ## Blockers
 - No iOS Home screen inventory, flow audit, or state inventory exists in the repository.
@@ -60,6 +71,9 @@
 - No sourced Create Habit defaults, validation copy, schedule preset list, reminder interaction rules, or icon/color picker behavior exists in the repository.
 - No approved Create Habit icon catalog, color catalog grouping, or reminder-time editing treatment exists in the repository.
 - The new Create Habit UI is buildable, but it is still assumption-driven and cannot be treated as parity-final until the iOS Create Habit audit exists.
+- No iOS Activity screen inventory, screenshots, or analytics-state audit exists in the repository.
+- No sourced Activity default period, completion-percentage semantics, done-day rule, chart granularity, or future-period navigation rule exists in the repository.
+- The new Activity logic layer is buildable and directly tested, but it remains assumption-driven and cannot be treated as parity-final until the iOS Activity audit exists.
 
 ## Validation
 - `./gradlew :feature:home:testDebugUnitTest :feature:home:assembleDebug :data:habits:assembleDebug` completed successfully.
@@ -75,6 +89,9 @@
 - `./gradlew --no-daemon :app:assembleDebug` completed successfully after the Create Habit feature-module changes.
 - `./gradlew --no-daemon :feature:create_habit:assembleDebug :feature:create_habit:testDebugUnitTest :feature:create_habit:assembleAndroidTest :app:assembleDebug` completed successfully after the Create Habit UI implementation.
 - `./gradlew --no-daemon :feature:create_habit:assembleDebug` completed successfully after the Create Habit UI review follow-up fix.
+- `./gradlew --no-daemon :feature:activity:testDebugUnitTest :feature:activity:assembleDebug` completed successfully after adding the Activity MVI logic layer and analytics tests.
+- `./gradlew --no-daemon :app:assembleDebug` completed successfully after the Activity feature-module changes.
+- `./gradlew --no-daemon :feature:activity:testDebugUnitTest` completed successfully after adding direct coverage for the Activity schedule fallback and created-at / stopped-at gating rules.
 
 ## Exact Next Recommended Step
-Import verified iOS Create Habit screenshots and flow/state references, then update [docs/ios_screen_inventory.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/ios_screen_inventory.md), [docs/feature_parity_checklist.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/feature_parity_checklist.md), [docs/ui_parity_checklist.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/ui_parity_checklist.md), and [docs/icon_color_catalog.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/icon_color_catalog.md) against the implemented Create Habit screen before changing picker grouping, reminder-time editing treatment, copy, or dismissal behavior.
+Import verified iOS Activity screenshots, chart states, and analytics semantics, then update [docs/ios_screen_inventory.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/ios_screen_inventory.md), [docs/feature_parity_checklist.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/feature_parity_checklist.md), and [docs/ui_parity_checklist.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/ui_parity_checklist.md) against the now-tested Activity logic before wiring `ActivityViewModel` into [ActivityFeatureEntry.kt](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/feature/activity/src/main/java/com/threemdroid/habittracker/feature/activity/ActivityFeatureEntry.kt) or building any non-final Activity UI.

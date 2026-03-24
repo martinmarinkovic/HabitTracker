@@ -404,3 +404,64 @@ Audit the new Create Habit UI phase for architecture compliance, MVI compliance,
 
 ### Next Milestone
 Import verified iOS Create Habit references and reconcile the current Create Habit copy, picker grouping, reminder-time treatment, and interaction details before accepting the screen as parity-final.
+
+## 2026-03-24 Activity Logic Implementation
+### Scope
+Implement the Activity feature logic layer only: conservative analytics derivation, strict MVI contracts, reducer-driven state handling, and direct unit coverage, without starting unsourced Activity UI work.
+
+### Completed
+- Added `ActivityUiState`, `ActivityIntent`, `ActivityEffect`, chart/filter/summary state models, a pure reducer, and `ActivityViewModel` in `feature/activity`.
+- Added a feature-local `ObserveActivityDataUseCase` that derives period windows, available habit filters, chart-ready daily points, average completion, done days, and total progress from the existing `HabitsRepository` habits and period-scoped entries.
+- Kept the Activity route as the existing placeholder destination so this phase stays logic-only and does not start unsourced Activity screen assembly.
+- Avoided widening database or repository contracts by composing the existing `observeHabits()` and `observeHabitEntries(habitId, startDate, endDate)` flows inside the feature layer.
+- Added direct unit coverage for Activity analytics aggregation and failure handling, reducer transitions, and ViewModel period/filter/navigation state behavior.
+- Verified the changed scope with `./gradlew --no-daemon :feature:activity:testDebugUnitTest :feature:activity:assembleDebug` and `./gradlew --no-daemon :app:assembleDebug`.
+
+### Observed Baseline
+- Activity now has a strict MVI logic layer, but the route still renders the existing placeholder screen.
+- Activity analytics currently operate on habit progress only; the existing mood repository surface was not widened because the supported Activity scope in this phase is chart and completion analytics from habit entries.
+- All chart points are currently day-granular even for weekly and monthly periods because the current stored data model is date-based only.
+- The analytics layer uses the current habit target/schedule/lifecycle metadata across historical dates because no versioned habit-history model exists.
+
+### Remaining Risks
+- Activity behavior is still provisional because no iOS Activity screen inventory, screenshots, or analytics rule audit exists in the repository.
+- Default period, done-day semantics, average-completion semantics, all-habits filter scope, and future-period navigation behavior remain assumption-driven until sourced Activity references exist.
+- No Activity route wiring or non-final UI assembly exists yet for the new logic layer.
+
+### Next Milestone
+Import verified iOS Activity references and analytics definitions, then reconcile the new Activity assumptions before wiring `ActivityViewModel` into the route or building any non-final Activity UI.
+
+## 2026-03-24 Activity Logic Review Follow-Up
+### Scope
+Audit the new Activity logic phase for architecture compliance, MVI compliance, regression risk, missing tests, and documentation accuracy.
+
+### Completed
+- Reviewed the new `feature/activity` contracts, use case, reducer, ViewModel, and tests against the architecture, state-management, parity, and regression docs.
+- Documented the previously hidden Activity schedule assumption that an empty habit `selectedDays` set is treated as an every-day fallback, matching the current shared schedule behavior already used by Home.
+
+### Remaining Risks
+- Activity completion semantics, done-day semantics, and period behavior are still assumption-driven because the iOS Activity audit is missing.
+- The current tests do not directly cover created-at/stopped-at historical gating or the newly documented empty-schedule fallback.
+- Activity still has no route wiring or non-final UI assembly.
+
+### Next Milestone
+Import verified iOS Activity references and analytics semantics, then reconcile the logged Activity assumptions before wiring `ActivityViewModel` into the route or building any non-final Activity UI.
+
+## 2026-03-24 Activity Logic Test Follow-Up
+### Scope
+Close the remaining direct business-logic test gap for Activity analytics without changing Activity behavior or starting UI work.
+
+### Completed
+- Added focused `ObserveActivityDataUseCase` tests for the currently implemented empty `selectedDays` => every-day fallback.
+- Added focused `ObserveActivityDataUseCase` tests for created-at historical gating across a weekly period.
+- Added focused `ObserveActivityDataUseCase` tests for stopped-at historical gating across a weekly period.
+- Kept the change set test-only; no production Activity behavior changed.
+- Verified the changed scope with `./gradlew --no-daemon :feature:activity:testDebugUnitTest`.
+
+### Remaining Risks
+- Activity analytics semantics are still assumption-driven because no iOS Activity audit exists in the repository.
+- The logic is now better covered, but parity approval is still blocked on sourced Activity chart, copy, and behavior references.
+- Activity still has no route wiring or non-final UI assembly.
+
+### Next Milestone
+Import verified iOS Activity references and analytics semantics, then reconcile the now-tested Activity assumptions before wiring `ActivityViewModel` into the route or building any non-final Activity UI.
