@@ -54,6 +54,7 @@
 - Replaced the blocked Learn API placeholder doc with the approved provisional runtime spec for this project: `index.json` categories, `{categoryId}.json` detail path, and derived `jpg` / `mp4` media URLs under `https://iomc.rs/rutinna/db/`.
 - Updated the Learn blocker ledger so the repo now records that a provisional runtime contract exists, while the field-level detail payload schema and iOS Learn parity references are still unresolved.
 - Verified the live Learn detail payload schema, expanded the shared Learn model only to the proven runtime fields (`imageUrl`, `videoUrl`, and detail `sections(id, title, body)`), replaced the Learn repository `Unavailable` stub with a real categories-plus-detail remote aggregation path, and updated Learn mapping/tests accordingly.
+- Removed the direct `feature:learn` -> `data:learn` dependency and moved Learn feature/data assembly ownership to `:app` by adding `data:learn` at the app boundary while leaving the existing `data:learn` Hilt binding module in place.
 - Audited the Profile implementation request against `docs/ios_screen_inventory.md` and the current Profile model/repository surface, then stopped implementation because the repository still has no verified Profile iOS screen inventory and no source-backed Profile contract beyond the provisional count-based `ProfileSummary`.
 - Added a durable Profile blocker row to `docs/known_assumptions_and_gaps.md` so the long-term gap ledger now explicitly records that the current Profile surface is insufficient for sourced Profile MVI or UI implementation.
 
@@ -85,7 +86,7 @@
 - Learn now has a real MVI/UI implementation backed by a real provisional runtime data path: the repository fetches `index.json`, fetches each `{categoryId}.json` array of `{ id, title, body }` detail items, derives `jpg` / `mp4` URLs from the category id, and the feature maps those sections into the current detail paragraph cards.
 - The Learn continuation follow-up intentionally changed coverage and previews only; it did not widen the Learn data contract or rework the existing production UI/state flow that was already present in the interrupted session.
 - Learn now has an approved provisional runtime spec for the category list endpoint, detail payload schema, and derived media URLs, but the repo still lacks verified iOS Learn screen inventory and parity references.
-- To keep the Learn change inside the allowed scope, `feature:learn` currently depends on `data:learn` for the Hilt binding path; that is functional, but it should be revisited when broader DI cleanup is intentionally in scope.
+- Learn dependency ownership now matches the architecture rules: `feature:learn` depends only on core/domain modules, `data:learn` still owns repository binding, and `:app` now owns the Learn feature/data assembly dependency.
 - The Learn data path now surfaces derived `videoUrl` values to the existing feature state, but the app shell still does not wire `onVideoRequested` end to end, so the current `Play Video` CTA remains an integration follow-up rather than a parity-complete flow.
 - Profile remains intentionally blocked: `ProfileFeatureEntry` is still a placeholder route, and the current `ProfileSummary` contract is only a provisional count aggregate with no sourced identity/avatar/settings/mood-analytics surface.
 
@@ -106,7 +107,6 @@
 - The new Activity UI is buildable, but it remains assumption-driven and cannot be treated as parity-final until the iOS Activity audit exists.
 - The Activity Compose UI tests compile into the Android test artifact, but they were not executed on a device or emulator in this session.
 - No verified Learn iOS screen inventory or parity references exist in the repository yet.
-- `feature:learn` still depends directly on `data:learn` for the current Hilt binding path, which violates the target architecture boundary.
 - The Learn data path now exposes derived `videoUrl`, but the app shell still passes a no-op `onVideoRequested` callback, so Learn video playback is not wired end to end.
 - The Learn Compose UI tests compile into the Android test artifact, but they were not executed on a device or emulator in this session.
 - No verified Profile iOS screen inventory, identity/avatar contract, settings-shortcut behavior, period-switching rule, or mood-analytics spec exists in the repository.
@@ -134,6 +134,7 @@
 - `./gradlew --no-daemon :feature:learn:assembleDebug :feature:learn:testDebugUnitTest :feature:learn:assembleAndroidTest :app:assembleDebug` completed successfully after the Learn continuation follow-up coverage and preview additions.
 - No build validation was required in the Learn runtime spec approval follow-up because this session updated documentation only.
 - `./gradlew --no-daemon :data:learn:testDebugUnitTest :feature:learn:testDebugUnitTest :feature:learn:assembleDebug :app:assembleDebug` completed successfully after implementing the Learn runtime data path and mapping updates.
+- `./gradlew --no-daemon :feature:learn:assembleDebug :app:assembleDebug` completed successfully after removing the direct `feature:learn` -> `data:learn` dependency and moving Learn data integration ownership to `:app`.
 
 ## Exact Next Recommended Step
-Remove the direct `feature:learn` -> `data:learn` dependency by moving the Learn Hilt binding/integration out of the feature module, then either wire `LearnEffect.OpenVideo` to a real app-level launcher or suppress the Learn video CTA until that launcher exists.
+Either wire `LearnEffect.OpenVideo` to a real app-level launcher or suppress the Learn video CTA until that launcher exists.

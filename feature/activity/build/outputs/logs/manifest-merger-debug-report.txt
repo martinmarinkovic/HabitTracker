@@ -1,0 +1,16 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/feature/activity/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest1490918797092111750.xml:2:13-83
+INJECTED from /Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/feature/activity/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest1490918797092111750.xml:2:13-83
+	package
+		INJECTED from /Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/feature/activity/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest1490918797092111750.xml
+	xmlns:android
+		ADDED from /Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/feature/activity/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest1490918797092111750.xml:2:23-81
+uses-sdk
+INJECTED from /Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/feature/activity/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest1490918797092111750.xml reason: use-sdk injection requested
+INJECTED from /Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/feature/activity/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest1490918797092111750.xml
+INJECTED from /Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/feature/activity/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest1490918797092111750.xml
+	android:targetSdkVersion
+		INJECTED from /Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/feature/activity/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest1490918797092111750.xml
+	android:minSdkVersion
+		INJECTED from /Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/feature/activity/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest1490918797092111750.xml

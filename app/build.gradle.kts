@@ -22,6 +22,7 @@ dependencies {
     implementation(project(":core:navigation"))
     implementation(project(":data:activity"))
     implementation(project(":data:habits"))
+    implementation(project(":data:learn"))
     implementation(project(":domain:activity"))
     implementation(project(":domain:habits"))
     implementation(project(":feature:activity"))

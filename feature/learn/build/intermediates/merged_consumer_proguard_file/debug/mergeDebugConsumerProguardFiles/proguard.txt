@@ -1,0 +1,2 @@
+-keep,allowobfuscation,allowshrinking class com.threemdroid.habittracker.feature.learn.presentation.LearnViewModel
+-keep,allowobfuscation,allowshrinking class com.threemdroid.habittracker.feature.learn.presentation.LearnViewModel

@@ -673,3 +673,22 @@ Implement the real Learn repository/domain data path against the approved provis
 
 ### Next Milestone
 Move the Learn binding path out of `feature:learn`, then either wire `LearnEffect.OpenVideo` at the app level or suppress the Learn video CTA until that launcher exists.
+
+## 2026-03-24 Learn Architecture Boundary Correction
+### Scope
+Remove the direct `feature:learn` -> `data:learn` dependency without changing Learn behavior, and move the Learn data integration ownership to the app/module-assembly boundary.
+
+### Completed
+- Removed the direct `implementation(project(":data:learn"))` dependency from `feature:learn`.
+- Added `implementation(project(":data:learn"))` to `:app` so the app now owns Learn feature/data assembly, matching the project architecture rules.
+- Kept the existing `data:learn` Hilt binding module unchanged so repository binding still lives at the data boundary instead of the feature boundary.
+- Updated the Learn gap ledger and handoff docs so they no longer report the direct feature-to-data dependency as an active blocker.
+- Verified the changed wiring with `./gradlew --no-daemon :feature:learn:assembleDebug :app:assembleDebug`.
+
+### Remaining Risks
+- The Learn video CTA is still not wired end to end because the app shell still passes a no-op `onVideoRequested` callback.
+- Learn parity remains provisional because verified iOS Learn references are still missing.
+- Learn Android UI tests still compile into the Android test artifact only; they were not executed on a device or emulator in this session.
+
+### Next Milestone
+Either wire `LearnEffect.OpenVideo` to a real app-level launcher or suppress the Learn video CTA until that launcher exists.
