@@ -55,6 +55,17 @@ class HabitsRepositoryImpl(
                 )
             }
 
+    override fun observeHabitEntries(date: LocalDate): Flow<AppResult<List<HabitEntry>>> =
+        habitEntryDao.observeEntriesForDate(date)
+            .map { entries -> entries.map { it.toModel() } }
+            .asAppResult { throwable ->
+                AppError.Storage(
+                    source = "HabitEntryDao.observeEntriesForDate",
+                    message = throwable.message,
+                    cause = throwable,
+                )
+            }
+
     override fun observeHabitEntries(
         habitId: String,
         startDate: LocalDate,

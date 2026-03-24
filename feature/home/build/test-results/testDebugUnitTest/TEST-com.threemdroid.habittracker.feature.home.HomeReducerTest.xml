@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.threemdroid.habittracker.feature.home.HomeReducerTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-03-24T10:19:25.444Z" hostname="Martins-MacBook-Pro.local" time="0.02">
+  <properties/>
+  <testcase name="homeDataLoading_clearsTransientInteractiveState" classname="com.threemdroid.habittracker.feature.home.HomeReducerTest" time="0.014"/>
+  <testcase name="homeDataLoadFailed_setsErrorState" classname="com.threemdroid.habittracker.feature.home.HomeReducerTest" time="0.001"/>
+  <testcase name="homeDataLoadedWithHabits_setsContentState" classname="com.threemdroid.habittracker.feature.home.HomeReducerTest" time="0.002"/>
+  <testcase name="quickAddValidationFailed_keepsOverlayVisibleAndAddsValidationError" classname="com.threemdroid.habittracker.feature.home.HomeReducerTest" time="0.001"/>
+  <testcase name="homeDataLoadedWithoutHabits_setsEmptyState" classname="com.threemdroid.habittracker.feature.home.HomeReducerTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

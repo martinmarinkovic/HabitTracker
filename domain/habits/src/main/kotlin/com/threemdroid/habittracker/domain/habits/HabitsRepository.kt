@@ -14,6 +14,8 @@ interface HabitsRepository {
 
     fun observeHabitEntries(habitId: String): Flow<AppResult<List<HabitEntry>>>
 
+    fun observeHabitEntries(date: LocalDate): Flow<AppResult<List<HabitEntry>>>
+
     fun observeHabitEntries(
         habitId: String,
         startDate: LocalDate,

@@ -159,3 +159,90 @@ Verify whether the repository contains a sourced Learn remote contract before im
 
 ### Next Milestone
 Import the verified Learn contract into [docs/learn_api_spec.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/learn_api_spec.md) with endpoint paths, methods, auth rules, DTO fields, paragraph schema, and image/video derivation rules before any Learn remote implementation begins.
+
+## 2026-03-24 Home MVI Foundation Update
+### Scope
+Implement Home feature state management, reducer, ViewModel orchestration, and feature-local business logic without building the final Home UI.
+
+### Completed
+- Added `HomeUiState`, `HomeIntent`, `HomeEffect`, and supporting Home state models in `feature/home`.
+- Added a pure reducer and `HomeViewModel` with one-time effect emission and reducer-driven state updates.
+- Added feature-local Home use cases for observing the selected-date snapshot, recording habit progress, saving mood selection, and stopping a habit.
+- Added the minimal `domain:habits` and `data:habits` support required for Home to observe all habit entries for a selected date.
+- Added unit tests for reducer state transitions and ViewModel intent-to-state / intent-to-effect behavior.
+- Verified the changed scope with `./gradlew :feature:home:testDebugUnitTest :feature:home:assembleDebug :data:habits:assembleDebug`.
+- Re-verified the app shell with `./gradlew :app:assembleDebug`.
+
+### Observed Baseline
+- The Home feature now has a strict MVI logic layer but is still rendered by the existing placeholder route.
+- Home business logic lives in feature-local use cases and the ViewModel, not in Composables.
+- The new Home logic depends on provisional schedule, mood, and same-day update assumptions because no sourced Home screen audit exists in the repo yet.
+
+### Outstanding Blockers
+- Missing iOS Home screen inventory and state audit.
+- Missing sourced Home greeting copy, section wording, and UI parity rules.
+- Missing sourced Home rules for mood interactions and repeat same-day habit updates.
+- No DI or route wiring yet for the new `HomeViewModel`.
+
+### Next Milestone
+Audit the iOS Home screen and reconcile the new Home assumptions before wiring `HomeViewModel` into the route and assembling the non-final Home UI around the new MVI state/effect contract.
+
+## 2026-03-24 Home Review Follow-Up
+### Scope
+Audit the newly added Home MVI phase for architecture, state consistency, and documentation coverage.
+
+### Completed
+- Reviewed the Home MVI implementation against the architecture, state management, naming, parity, and handoff docs.
+- Fixed a reducer state-consistency bug so loading and load-failure transitions clear transient quick-add and mood state instead of carrying stale interactive state forward.
+- Added reducer coverage for the loading/error transient-state reset behavior.
+- Logged the previously undocumented Home greeting time-of-day bucket assumption.
+- Re-ran `./gradlew :feature:home:testDebugUnitTest`.
+
+### Remaining Risks
+- Home logic is still provisional because the iOS Home screen inventory and business rules are missing.
+- Greeting time buckets, schedule fallback behavior, mood frequency, and repeat same-day update semantics remain unsourced.
+- The new Home ViewModel is still not wired into the route, so integration risk remains for the next phase.
+
+### Next Milestone
+Use verified iOS Home references to reconcile the documented Home assumptions before route wiring or non-final UI assembly begins.
+
+## 2026-03-24 Home Use Case Test Coverage Update
+### Scope
+Close the missing direct business-logic test gap for the Home feature without changing Home UI or expanding feature behavior.
+
+### Completed
+- Added direct unit tests for `ObserveHomeDataUseCase`, `RecordHomeHabitProgressUseCase`, `SaveHomeMoodSelectionUseCase`, and `StopHabitFromHomeUseCase`.
+- Added a feature-local Home test-support file with deterministic fixtures and repository doubles so Home logic tests stay isolated from production modules.
+- Moved the existing `HomeViewModelTest` onto the shared Home test doubles to keep the Home test surface consistent and maintainable.
+- Verified the current documented Home assumptions directly in tests, including empty-schedule fallback, first mood selection per day, one-mood-per-day replacement, boolean same-day no-op, quantity same-day replacement, and date-scoped id behavior.
+- Re-ran `./gradlew :feature:home:testDebugUnitTest`.
+
+### Observed Baseline
+- The Home feature now has direct unit coverage for reducer, ViewModel, and use-case layers.
+- No production code change was required to close the business-logic test gap.
+- Home behavior remains provisional where the repository still lacks sourced iOS Home rules.
+
+### Outstanding Blockers
+- Missing iOS Home screen inventory and sourced Home business rules.
+- Missing sourced guidance for greeting buckets, mood frequency, empty schedules, and repeat same-day update semantics.
+- No DI or route wiring yet for the `HomeViewModel`.
+
+### Next Milestone
+Audit the iOS Home screen and reconcile the documented Home assumptions before wiring `HomeViewModel` into the route or assembling Home UI on top of the now-tested logic layer.
+
+## 2026-03-24 Home Test Coverage Review Follow-Up
+### Scope
+Audit the new Home use-case test phase for architectural compliance, regression risk, and documentation accuracy.
+
+### Completed
+- Reviewed the new Home test-support layer and direct use-case tests against architecture, MVI, testing, and regression rules.
+- Re-ran `./gradlew :feature:home:testDebugUnitTest`.
+- Corrected the documented Home mood assumption so the gap ledger now matches the implemented and tested behavior: first observed same-day mood entry wins, not latest-entry semantics.
+
+### Remaining Risks
+- Home behavior is still provisional because the iOS Home inventory and sourced Home rules are missing.
+- Home mood behavior now has accurate docs, but it still depends on repository ordering until sourced product rules define the intended same-day mood semantics.
+- Some failure-propagation paths in Home use cases remain lightly covered compared with the happy-path and primary-assumption cases.
+
+### Next Milestone
+Audit the iOS Home screen and confirm the intended mood ordering, schedule semantics, greeting behavior, and repeat-update rules before any Home route wiring or UI assembly begins.
