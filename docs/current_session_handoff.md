@@ -23,8 +23,12 @@
 - Added `CreateHabitUiState`, `CreateHabitIntent`, `CreateHabitEffect`, reminder/form state models, a pure reducer, and a `CreateHabitViewModel` in `feature/create_habit`.
 - Added feature-local Create Habit draft, validation, and save use cases so Create Habit form rules and persistence orchestration live outside the UI layer.
 - Added Create Habit tests for validation behavior, reminder/save mapping and rollback behavior, reducer transitions, and ViewModel intent-to-state / intent-to-effect handling.
-- Kept `CreateHabitDestination` on the existing placeholder route so the phase stays logic-only and does not start unsourced Create Habit UI work.
 - Reviewed the Create Habit logic phase and added the missing Create Habit assumption rows to `docs/known_assumptions_and_gaps.md` so the durable blocker ledger now matches the current Create Habit implementation and tests.
+- Replaced the Create Habit placeholder route with a conservative Compose screen backed by the existing Create Habit MVI layer.
+- Added Create Habit UI rendering for the main form, goal summary card, schedule controls, reminders section, `Add Habit` CTA, modal Goal sheet, and full-screen Select Icon / Select Color picker views.
+- Added Create Habit previews, UI test tags, and Compose UI tests covering core rendering plus critical goal-sheet, picker, reminder, and save interactions.
+- Logged the new Create Habit UI fallback decisions in `docs/known_assumptions_and_gaps.md`, including provisional picker grouping, read-only reminder times, and manual picker dismissal behavior.
+- Reviewed the Create Habit UI phase and fixed the route-level effect collector so one-time effects are now collected with lifecycle awareness.
 
 ## Key Decisions
 - Home now has strict MVI contracts with reducer-driven state updates and channel-backed one-time effects.
@@ -40,6 +44,9 @@
 - Create Habit validation is conservative and currently assumes these unsourced defaults: boolean is the initial habit type, quantity validation only applies in quantity mode, schedule presets are limited to `EVERY_DAY`, `WEEKDAYS`, `WEEKENDS`, and `CUSTOM`, custom weekday toggles preserve the currently visible day selection, and blank quantity unit labels normalize to `null`.
 - Create Habit currently treats icon/color selection as required token picks with no product-approved catalog, gives newly added reminders a provisional default time of `09:00`, and maps reminder schedules to the habit-level selected days because no sourced per-reminder schedule UI/rules exist in the repo.
 - Create Habit save currently persists the habit through `HabitsRepository.upsertHabit(...)`, then persists reminders individually through `upsertReminder(...)`, and performs a best-effort rollback by deleting the new habit if a reminder save fails because no transactional create-habit repository contract exists yet.
+- Create Habit UI now stays intentionally conservative where source is missing: the screen uses provisional English section copy, a single full-screen form, a modal Goal sheet, full-screen icon/color pickers with one provisional `Available` group, monogram or token-based visual placeholders instead of sourced assets, and reminder rows that show existing time values without exposing unsourced time-editing UI.
+- Picker selection updates feature state immediately but does not auto-dismiss the picker; users return to the form with manual back navigation until iOS dismissal behavior is sourced.
+- Create Habit now matches the project’s Compose integration rule for one-time effects: route-level effect collection is lifecycle-aware.
 
 ## Blockers
 - No iOS Home screen inventory, flow audit, or state inventory exists in the repository.
@@ -51,7 +58,8 @@
 - Home still uses a manually assembled `homeViewModelFactory(...)` rather than feature-level Hilt ViewModel integration, although the app-shell DI violation itself is now fixed.
 - No iOS Create Habit screen inventory, screenshots, or flow/state audit exists in the repository.
 - No sourced Create Habit defaults, validation copy, schedule preset list, reminder interaction rules, or icon/color picker behavior exists in the repository.
-- Create Habit route wiring and all Create Habit UI assembly remain blocked; `CreateHabitDestination` still renders the placeholder screen.
+- No approved Create Habit icon catalog, color catalog grouping, or reminder-time editing treatment exists in the repository.
+- The new Create Habit UI is buildable, but it is still assumption-driven and cannot be treated as parity-final until the iOS Create Habit audit exists.
 
 ## Validation
 - `./gradlew :feature:home:testDebugUnitTest :feature:home:assembleDebug :data:habits:assembleDebug` completed successfully.
@@ -65,6 +73,8 @@
 - `./gradlew --no-daemon :feature:create_habit:assembleDebug` completed successfully after adding the Create Habit MVI logic layer.
 - `./gradlew --no-daemon :feature:create_habit:testDebugUnitTest` completed successfully after adding Create Habit validation, reducer, save-path, and ViewModel tests.
 - `./gradlew --no-daemon :app:assembleDebug` completed successfully after the Create Habit feature-module changes.
+- `./gradlew --no-daemon :feature:create_habit:assembleDebug :feature:create_habit:testDebugUnitTest :feature:create_habit:assembleAndroidTest :app:assembleDebug` completed successfully after the Create Habit UI implementation.
+- `./gradlew --no-daemon :feature:create_habit:assembleDebug` completed successfully after the Create Habit UI review follow-up fix.
 
 ## Exact Next Recommended Step
-Import verified iOS Create Habit screenshots and flow/state references, then update [docs/ios_screen_inventory.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/ios_screen_inventory.md), [docs/feature_parity_checklist.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/feature_parity_checklist.md), and [docs/icon_color_catalog.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/icon_color_catalog.md) before wiring `CreateHabitViewModel` into [CreateHabitFeatureEntry.kt](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/feature/create_habit/src/main/java/com/threemdroid/habittracker/feature/create_habit/CreateHabitFeatureEntry.kt) or assembling any non-final Create Habit UI on top of the new logic layer.
+Import verified iOS Create Habit screenshots and flow/state references, then update [docs/ios_screen_inventory.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/ios_screen_inventory.md), [docs/feature_parity_checklist.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/feature_parity_checklist.md), [docs/ui_parity_checklist.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/ui_parity_checklist.md), and [docs/icon_color_catalog.md](/Users/martinmarinkovic/AndroidStudioProjects/HabitTracker/docs/icon_color_catalog.md) against the implemented Create Habit screen before changing picker grouping, reminder-time editing treatment, copy, or dismissal behavior.

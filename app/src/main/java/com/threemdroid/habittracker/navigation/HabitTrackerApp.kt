@@ -21,6 +21,7 @@ import com.threemdroid.habittracker.feature.settings.settingsScreen
 @Composable
 fun HabitTrackerApp(
     homeViewModelFactory: ViewModelProvider.Factory,
+    createHabitViewModelFactory: ViewModelProvider.Factory,
 ) {
     val navController = rememberNavController()
 
@@ -43,7 +44,15 @@ fun HabitTrackerApp(
                 navController.navigatePrimaryRoute(ProfileDestination.route)
             },
         )
-        createHabitScreen()
+        createHabitScreen(
+            viewModelFactory = createHabitViewModelFactory,
+            onBackRequested = {
+                navController.popBackStack()
+            },
+            onHabitCreated = {
+                navController.popBackStack()
+            },
+        )
         activityScreen()
         learnScreen()
         profileScreen()

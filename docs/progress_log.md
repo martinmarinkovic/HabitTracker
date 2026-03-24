@@ -362,3 +362,45 @@ Audit the new Create Habit logic phase for architecture compliance, MVI complian
 
 ### Next Milestone
 Import verified iOS Create Habit references and reconcile the newly logged Create Habit assumptions before wiring `CreateHabitViewModel` into the route or building any non-final Create Habit UI.
+
+## 2026-03-24 Create Habit UI Implementation
+### Scope
+Implement the Create Habit screen, goal sheet, icon picker, color picker, and minimal route-backed presentation wiring without changing Create Habit business rules.
+
+### Completed
+- Replaced the unresolved Create Habit placeholder route with a conservative Compose screen backed by the existing `CreateHabitViewModel` factory.
+- Added Create Habit UI rendering for name input, icon/color selection cards, goal summary card, schedule controls, custom weekday chips, reminder section, and the bottom `Add Habit` CTA.
+- Added a modal Goal sheet that edits the existing habit type, target value, default increment, and unit-label state without introducing a new save layer.
+- Added full-screen Select Icon and Select Color picker views with search support, selected-state visuals, and provisional single-group catalogs built only from the currently known token surface.
+- Added Create Habit previews, UI test tags, and Compose UI tests for core rendering plus critical interactions across the goal sheet, pickers, reminder add action, and add-habit CTA.
+- Verified the changed scope with `./gradlew --no-daemon :feature:create_habit:assembleDebug :feature:create_habit:testDebugUnitTest :feature:create_habit:assembleAndroidTest :app:assembleDebug`.
+
+### Observed Baseline
+- Create Habit is no longer a placeholder route; it now renders a conservative feature UI on top of the existing MVI logic layer.
+- Icon and color pickers currently use a single provisional `Available` section because no approved catalog grouping exists in the repository.
+- Reminder rows currently surface add/remove/enable behavior only; reminder time is displayed from existing state but not editable because no sourced time-picker treatment exists in the repository.
+- Picker selection currently updates feature state immediately but stays on the picker until the user manually navigates back, which keeps the flow conservative until sourced dismissal behavior exists.
+
+### Remaining Risks
+- Create Habit visual parity remains blocked on missing iOS screenshots, picker catalogs, and copy references.
+- Goal-sheet copy, picker grouping, reminder-time treatment, and some layout details remain provisional because the iOS Create Habit audit is still missing.
+- The new Compose UI tests compile into the Android test artifact, but they were not executed on a device or emulator in this session.
+
+### Next Milestone
+Import verified iOS Create Habit references and reconcile the implemented Create Habit screen, picker grouping, copy, and reminder-time editing behavior against sourced parity requirements before treating the feature as parity-final.
+
+## 2026-03-24 Create Habit UI Review Follow-Up
+### Scope
+Audit the new Create Habit UI phase for architecture compliance, MVI compliance, regression risk, and documentation accuracy.
+
+### Completed
+- Reviewed the Create Habit route, UI assembly, picker flows, previews, and Compose UI tests against the architecture, state-management, parity, and regression docs.
+- Fixed the new Create Habit route so one-time effects are now collected with lifecycle awareness instead of a plain `LaunchedEffect` collector.
+
+### Remaining Risks
+- Create Habit visual behavior is still heavily assumption-driven because the iOS Create Habit audit is missing.
+- The UI tests cover critical screen interactions, but they still do not cover route-level effect handling or internal back-navigation behavior.
+- The Android UI tests were compiled into the debug Android test artifact, but they were not executed on a device or emulator in this session.
+
+### Next Milestone
+Import verified iOS Create Habit references and reconcile the current Create Habit copy, picker grouping, reminder-time treatment, and interaction details before accepting the screen as parity-final.

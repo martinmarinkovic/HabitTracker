@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import com.threemdroid.habittracker.core.designsystem.HabitTrackerTheme
 import com.threemdroid.habittracker.domain.activity.ActivityRepository
 import com.threemdroid.habittracker.domain.habits.HabitsRepository
+import com.threemdroid.habittracker.feature.create_habit.createHabitViewModelFactory
 import com.threemdroid.habittracker.feature.home.homeViewModelFactory
 import com.threemdroid.habittracker.navigation.HabitTrackerApp
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,10 +28,14 @@ class MainActivity : ComponentActivity() {
             habitsRepository = habitsRepository,
             activityRepository = activityRepository,
         )
+        val createHabitFactory = createHabitViewModelFactory(
+            habitsRepository = habitsRepository,
+        )
         setContent {
             HabitTrackerTheme {
                 HabitTrackerApp(
                     homeViewModelFactory = homeFactory,
+                    createHabitViewModelFactory = createHabitFactory,
                 )
             }
         }
