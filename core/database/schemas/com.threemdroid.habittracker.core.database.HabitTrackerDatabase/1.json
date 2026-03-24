@@ -1,0 +1,362 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "891fb8cdc1d21d2ecb91bfba0cbec7cb",
+    "entities": [
+      {
+        "tableName": "habits",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`habit_id` TEXT NOT NULL, `name` TEXT NOT NULL, `habit_type` TEXT NOT NULL, `target_value` REAL NOT NULL, `default_increment` REAL NOT NULL, `unit_label` TEXT, `allows_multiple_updates_per_day` INTEGER NOT NULL, `selected_icon_token` TEXT NOT NULL, `selected_color_token` TEXT NOT NULL, `selected_days` TEXT NOT NULL, `state` TEXT NOT NULL, `created_at_epoch_millis` INTEGER NOT NULL, `stopped_at_epoch_millis` INTEGER, PRIMARY KEY(`habit_id`))",
+        "fields": [
+          {
+            "fieldPath": "habitId",
+            "columnName": "habit_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "habitType",
+            "columnName": "habit_type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "targetValue",
+            "columnName": "target_value",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "defaultIncrement",
+            "columnName": "default_increment",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "unitLabel",
+            "columnName": "unit_label",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "allowsMultipleUpdatesPerDay",
+            "columnName": "allows_multiple_updates_per_day",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "selectedIconToken",
+            "columnName": "selected_icon_token",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "selectedColorToken",
+            "columnName": "selected_color_token",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "selectedDays",
+            "columnName": "selected_days",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "state",
+            "columnName": "state",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at_epoch_millis",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "stoppedAt",
+            "columnName": "stopped_at_epoch_millis",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "habit_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_habits_state",
+            "unique": false,
+            "columnNames": [
+              "state"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_habits_state` ON `${TABLE_NAME}` (`state`)"
+          },
+          {
+            "name": "index_habits_created_at_epoch_millis",
+            "unique": false,
+            "columnNames": [
+              "created_at_epoch_millis"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_habits_created_at_epoch_millis` ON `${TABLE_NAME}` (`created_at_epoch_millis`)"
+          }
+        ]
+      },
+      {
+        "tableName": "habit_entries",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`entry_id` TEXT NOT NULL, `habit_id` TEXT NOT NULL, `entry_date_epoch_day` INTEGER NOT NULL, `logged_at_epoch_millis` INTEGER NOT NULL, `value` REAL NOT NULL, PRIMARY KEY(`entry_id`), FOREIGN KEY(`habit_id`) REFERENCES `habits`(`habit_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "entryId",
+            "columnName": "entry_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "habitId",
+            "columnName": "habit_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "entryDate",
+            "columnName": "entry_date_epoch_day",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "loggedAt",
+            "columnName": "logged_at_epoch_millis",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "value",
+            "columnName": "value",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "entry_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_habit_entries_habit_id",
+            "unique": false,
+            "columnNames": [
+              "habit_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_habit_entries_habit_id` ON `${TABLE_NAME}` (`habit_id`)"
+          },
+          {
+            "name": "index_habit_entries_habit_id_entry_date_epoch_day",
+            "unique": false,
+            "columnNames": [
+              "habit_id",
+              "entry_date_epoch_day"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_habit_entries_habit_id_entry_date_epoch_day` ON `${TABLE_NAME}` (`habit_id`, `entry_date_epoch_day`)"
+          },
+          {
+            "name": "index_habit_entries_logged_at_epoch_millis",
+            "unique": false,
+            "columnNames": [
+              "logged_at_epoch_millis"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_habit_entries_logged_at_epoch_millis` ON `${TABLE_NAME}` (`logged_at_epoch_millis`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "habits",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "habit_id"
+            ],
+            "referencedColumns": [
+              "habit_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "mood_entries",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`mood_entry_id` TEXT NOT NULL, `entry_date_epoch_day` INTEGER NOT NULL, `logged_at_epoch_millis` INTEGER NOT NULL, `mood_token` TEXT NOT NULL, PRIMARY KEY(`mood_entry_id`))",
+        "fields": [
+          {
+            "fieldPath": "moodEntryId",
+            "columnName": "mood_entry_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "entryDate",
+            "columnName": "entry_date_epoch_day",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "loggedAt",
+            "columnName": "logged_at_epoch_millis",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "moodToken",
+            "columnName": "mood_token",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "mood_entry_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_mood_entries_entry_date_epoch_day",
+            "unique": false,
+            "columnNames": [
+              "entry_date_epoch_day"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_mood_entries_entry_date_epoch_day` ON `${TABLE_NAME}` (`entry_date_epoch_day`)"
+          },
+          {
+            "name": "index_mood_entries_logged_at_epoch_millis",
+            "unique": false,
+            "columnNames": [
+              "logged_at_epoch_millis"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_mood_entries_logged_at_epoch_millis` ON `${TABLE_NAME}` (`logged_at_epoch_millis`)"
+          }
+        ]
+      },
+      {
+        "tableName": "reminders",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`reminder_id` TEXT NOT NULL, `habit_id` TEXT NOT NULL, `time_second_of_day` INTEGER NOT NULL, `selected_days` TEXT NOT NULL, `is_enabled` INTEGER NOT NULL, PRIMARY KEY(`reminder_id`), FOREIGN KEY(`habit_id`) REFERENCES `habits`(`habit_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "reminderId",
+            "columnName": "reminder_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "habitId",
+            "columnName": "habit_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "time",
+            "columnName": "time_second_of_day",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "selectedDays",
+            "columnName": "selected_days",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isEnabled",
+            "columnName": "is_enabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "reminder_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_reminders_habit_id",
+            "unique": false,
+            "columnNames": [
+              "habit_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_reminders_habit_id` ON `${TABLE_NAME}` (`habit_id`)"
+          },
+          {
+            "name": "index_reminders_habit_id_is_enabled",
+            "unique": false,
+            "columnNames": [
+              "habit_id",
+              "is_enabled"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_reminders_habit_id_is_enabled` ON `${TABLE_NAME}` (`habit_id`, `is_enabled`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "habits",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "habit_id"
+            ],
+            "referencedColumns": [
+              "habit_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "settings",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`settings_id` INTEGER NOT NULL, `reminder_notifications_enabled` INTEGER NOT NULL, PRIMARY KEY(`settings_id`))",
+        "fields": [
+          {
+            "fieldPath": "settingsId",
+            "columnName": "settings_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reminderNotificationsEnabled",
+            "columnName": "reminder_notifications_enabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "settings_id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '891fb8cdc1d21d2ecb91bfba0cbec7cb')"
+    ]
+  }
+}
