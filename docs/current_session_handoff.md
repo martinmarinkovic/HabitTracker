@@ -57,6 +57,7 @@
 - Removed the direct `feature:learn` -> `data:learn` dependency and moved Learn feature/data assembly ownership to `:app` by adding `data:learn` at the app boundary while leaving the existing `data:learn` Hilt binding module in place.
 - Audited the Profile implementation request against `docs/ios_screen_inventory.md` and the current Profile model/repository surface, then stopped implementation because the repository still has no verified Profile iOS screen inventory and no source-backed Profile contract beyond the provisional count-based `ProfileSummary`.
 - Added a durable Profile blocker row to `docs/known_assumptions_and_gaps.md` so the long-term gap ledger now explicitly records that the current Profile surface is insufficient for sourced Profile MVI or UI implementation.
+- Re-checked the Profile implementation request against the current repository state after the Learn follow-up work and confirmed the blocker is unchanged: `ios_screen_inventory.md` still has zero verified screens, `feature/profile` is still a placeholder route, and the existing Profile data contract is still limited to the provisional aggregate-count `ProfileSummary`.
 
 ## Key Decisions
 - Home now has strict MVI contracts with reducer-driven state updates and channel-backed one-time effects.
@@ -136,6 +137,7 @@
 - `./gradlew --no-daemon :data:learn:testDebugUnitTest :feature:learn:testDebugUnitTest :feature:learn:assembleDebug :app:assembleDebug` completed successfully after implementing the Learn runtime data path and mapping updates.
 - `./gradlew --no-daemon :feature:learn:assembleDebug :app:assembleDebug` completed successfully after removing the direct `feature:learn` -> `data:learn` dependency and moving Learn data integration ownership to `:app`.
 - `./gradlew --no-daemon :feature:learn:testDebugUnitTest :feature:learn:assembleDebug :app:assembleDebug` completed successfully after wiring Learn video launching through the app shell.
+- No build validation was run in the latest Profile audit follow-up because the repository still lacks the source material required to make safe Profile code changes, so this session updated documentation only.
 
 ## Exact Next Recommended Step
-Add direct Learn repository tests for detail-fetch failure, empty-body failure, and serialization failure so the runtime data-path failure branches are covered.
+Import the real iOS Profile screen inventory and source-backed Profile contract first, then expand the Profile model/repository surface only to the verified fields and states required by that reference before any Profile MVI or UI implementation resumes.

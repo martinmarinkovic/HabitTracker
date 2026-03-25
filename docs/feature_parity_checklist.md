@@ -21,6 +21,13 @@ Every feature must be checked across these dimensions:
 - Tests defined
 - Regression risk noted
 
+## Profile
+- [x] Header (avatar, title)
+- [x] Summary metrics (completed, streaks)
+- [x] Period switching (daily/weekly/monthly)
+- [x] Mood analytics visualization
+- [x] Settings navigation
+
 ## Tracking Table
 | Feature ID | Feature Name | Source References | Business Rules | UI States | Data Contracts | Navigation | Errors | Tests | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
